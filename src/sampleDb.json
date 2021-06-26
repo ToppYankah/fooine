@@ -1,0 +1,201 @@
+{
+    "users": [
+        {
+            "id": "60av289ba598vb7a8",
+            "username": "Yankah Kenneth Topp",
+            "email": "tppyankah@gmail.com",
+            "phone": "0593598615",
+            "password": "1071011101101011161041219711010797104"
+        }
+    ],
+    "products": [
+        {
+            "id": 1,
+            "name": "Plain T-shirt",
+            "price": "23.50",
+            "size": "Medium",
+            "status": "In Stock",
+            "image": "/images/1.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_4",
+            "heldBy": ""
+        },
+        {
+            "id": 2,
+            "name": "Green Tea Shirt",
+            "price": "10.50",
+            "size": "Small",
+            "status": "In Stock",
+            "image": "/images/2.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_5",
+            "heldBy": ""
+        },
+        {
+            "id": 3,
+            "name": "Beard Picture Shirt",
+            "price": "25.00",
+            "size": "Large",
+            "status": "In Stock",
+            "image": "/images/3.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_3",
+            "heldBy": ""
+        },
+        {
+            "id": 4,
+            "name": "Adidas T-Shirt",
+            "price": "30.50",
+            "size": "Small",
+            "status": "On Hold",
+            "image": "/images/4.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_3",
+            "heldBy": ""
+        },
+        {
+            "id": 5,
+            "name": "Picture Shirt",
+            "price": "15.00",
+            "size": "Large",
+            "status": "In Stock",
+            "image": "/images/5.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_1",
+            "heldBy": ""
+        },
+        {
+            "id": 6,
+            "name": "Black & Africa Print",
+            "price": "90.00",
+            "size": "Medium",
+            "status": "Purchased",
+            "image": "/images/6.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_3",
+            "heldBy": ""
+        },
+        {
+            "id": 7,
+            "name": "Light Blue Shirt",
+            "price": "25.00",
+            "size": "Small",
+            "status": "In Stock",
+            "image": "/images/7.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_6",
+            "heldBy": ""
+        },
+        {
+            "id": 8,
+            "name": "Blue Print Shirt",
+            "price": "62.50",
+            "size": "Large",
+            "status": "In Stock",
+            "image": "/images/8.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_6",
+            "heldBy": ""
+        },
+        {
+            "id": 9,
+            "name": "Blend African Print",
+            "price": "85.00",
+            "size": "Medium",
+            "status": "On Hold",
+            "image": "/images/9.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_3",
+            "heldBy": ""
+        },
+        {
+            "id": 10,
+            "name": "African Print Dress",
+            "price": "50.00",
+            "size": "Small",
+            "status": "Purchased",
+            "image": "/images/10.jpg",
+            "comments": [],
+            "likes": [],
+            "wishlist": [],
+            "shares": [],
+            "category": "category_1",
+            "heldBy": ""
+        }
+    ],
+    "categories": [
+        {
+            "id": "category_1",
+            "name": "T-Shirts"
+        },
+        {
+            "id": "category_2",
+            "name": "Trousers"
+        },
+        {
+            "id": "category_3",
+            "name": "Shorts"
+        },
+        {
+            "id": "category_4",
+            "name": "Ladies Bags"
+        },
+        {
+            "id": "category_5",
+            "name": "African Wears"
+        },
+        {
+            "id": "category_6",
+            "name": "Plain Shirs"
+        },
+        {
+            "id": "category_7",
+            "name": "Picture Tops"
+        },
+        {
+            "id": "category_8",
+            "name": "Hoodies"
+        },
+        {
+            "id": "category_9",
+            "name": "Long Sleeves"
+        },
+        {
+            "id": "category_10",
+            "name": "Club Tees"
+        }
+    ],
+    "tokens": [
+        "sample_token|60av289ba598vb7a8"
+    ],
+    "cart": {
+        "60av289ba598vb7a8": [1,3,5]
+    }
+}

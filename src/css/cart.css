@@ -1,0 +1,217 @@
+.cart-popup {
+  position: fixed;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.cart-popup,
+.cart-popup .overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.cart-popup .overlay {
+  position: absolute;
+  background-color: #0000005a;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  cursor: pointer;
+}
+
+.cart-popup .inner {
+  max-width: 500px;
+  width: 100%;
+  background: white;
+  min-height: 100vh;
+  animation: slide-in-left 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  -webkit-animation: slide-in-left 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  --padding-x: 5%;
+}
+
+.cart-popup .inner .header {
+  padding: 15px var(--padding-x);
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-popup .inner .header .close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #eee;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 0;
+}
+
+.checkout-page,
+.cart-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.cart-page .body,
+.checkout-page .body {
+  flex: 1;
+  overflow: auto;
+}
+
+.cart-page .body::-webkit-scrollbar,
+.checkout-page .body::-webkit-scrollbar {
+  width: 5px;
+  background: transparent;
+}
+.cart-page .body::-webkit-scrollbar-thumb,
+.checkout-page .body::-webkit-scrollbar-thumb {
+  width: 5px;
+  background: #ddd;
+  border-radius: 10px;
+}
+
+.cart-page .footer,
+.checkout-page .footer {
+  padding: 20px var(--padding-x);
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.cart-page .footer .submit-btn,
+.checkout-page .footer .submit-btn {
+  flex: 1;
+  margin-right: 10%;
+  text-align: center;
+  font-size: 14px;
+}
+
+.cart-page .footer .price-tally {
+  display: flex;
+  align-items: flex-end;
+  color: var(--dark-color);
+}
+
+.cart-page .footer .price-tally b {
+  font-size: 15px;
+  margin-right: 5px;
+}
+.cart-page .footer .price-tally h3 {
+  font-size: 25px;
+  margin-right: 5px;
+  line-height: 25px;
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(100%);
+  }
+}
+
+.checkout-page .body .delivery-address .choose-delivery {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5%;
+}
+
+.checkout-page .body .label {
+  padding: 10px 5%;
+  padding-bottom: 0px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #aaa;
+}
+
+.checkout-page .body .choose-delivery button {
+  padding: 10px 20px;
+  margin: 20px 0px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex: 1;
+}
+.checkout-page .body .choose-delivery button:first-child {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.checkout-page .body .choose-delivery button:last-child {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+.checkout-page .body .choose-delivery button.selected {
+  background-color: var(--dark-color);
+  color: #fff;
+}
+
+.checkout-page .body .delivery-address .address-form {
+  padding: 0 5%;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-page .body textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 0px;
+  background-color: #f5f5f5;
+  padding: 20px;
+  outline: none;
+  min-height: 100px;
+  border-radius: 10px;
+  max-height: 200px;
+  min-width: 100%;
+  margin-top: 15px;
+}
+
+.checkout-page select {
+  padding: 10px;
+  border: none;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  outline: none;
+}
+
+.checkout-page .payable-details {
+  margin-top: 5px;
+}
+
+.checkout-page .amount-payable {
+  margin-top: 20px;
+}
+
+.checkout-page .payable {
+  padding: 5px 5%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+}
+
+.checkout-page .payable b {
+  font-size: 14px;
+}
+
+.checkout-page .payable:last-child {
+  margin-top: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.checkout-page .payable span {
+  color: var(--dark-color);
+}
+
+.checkout-page .payable small {
+  margin-right: 5px;
+}
