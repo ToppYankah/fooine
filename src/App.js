@@ -1,31 +1,42 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
 import HomePage from "./pages/homepage";
-import ProductsProvider from './providers/productProvider.js';
-import AuthProvider from './providers/authProvider';
-import CartProvider from './providers/cartProvider';
+import AddProdPage from "./pages/addprod";
+import { useProducts } from "./providers/productProvider";
+import { useToken } from "./hooks/token";
+import { useCart } from "./providers/cartProvider";
+import { useAuth } from "./providers/authProvider";
+import Loader from "./components/simple_loader";
 
 function App() {
+  const {fetchProducts, loading: productsLoading} = useProducts()
+  const {user, isAuth, loading: authLoading} = useAuth();
+  const [token] = useToken();
+  const {getCart} = useCart();
+
+  useEffect(() => {
+        fetchProducts();
+        getCart(isAuth ? user.id : token);
+    }, [isAuth]);
+
   return (
-    <AuthProvider>
-      <ProductsProvider>
-        <CartProvider>
-          <div className="App">
-            <Router>
-              <Switch>
-                <Route path="/">
-                  <HomePage />
-                </Route>
-              </Switch>
-          </Router>
-          </div>
-        </CartProvider>
-      </ProductsProvider>
-    </AuthProvider>
+    <div className="App">
+      {productsLoading  ? <Loader expand={true} /> :
+      <Router>
+        <Switch>
+          <Route path="/addProduct">
+            <AddProdPage />
+          </Route>
+          <Route path="/">
+            <HomePage />
+          </Route>
+        </Switch>
+    </Router>}
+    </div>
   );
 }
 

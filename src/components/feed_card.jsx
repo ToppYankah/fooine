@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons';
 import { Link } from 'react-router-dom';
+import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
-import { useProducts } from '../providers/productProvider';
-import Loader from './simple_loader';
+import { useProducts, getStatus } from '../providers/productProvider';
+// import Loader from './simple_loader';
 
 const FeedCard = ({feed}) => {
     const {user, isAuth} = useAuth();
-    const {loading, like, addToWishList, share} = useProducts();
-    const [liked, setLiked] = useState(feed.likes.includes(user.id));
-    const [wishlisted, setWishlisted] = useState(feed.wishlist.includes(user.id));
+    const [token] = useToken();
+    const {products, like, addToWishList, share} = useProducts();
+    const [liked, setLiked] = useState(false);
+    const [wishlisted, setWishlisted] = useState(false);
+
+    useEffect(() => {
+        setLiked(feed.likes.includes(isAuth ? user.id : token))
+        setWishlisted(feed.wishlist.includes(isAuth ? user.id : token))
+    }, [products]);
 
     const onViewItem = ()=>{
         // set current open feed
@@ -17,25 +24,16 @@ const FeedCard = ({feed}) => {
         // onClick();
     }
 
-    const handleLike = ()=> {
-        if(loading) return;
-        if(!liked && isAuth){
-            setLiked(like(user.id, feed.id))
-        }else{
-            setLiked(!like(user.id, feed.id, true))
-        }
-    }
-
     return (
         <div className='feed-card' 
-        style={{backgroundImage: `url(${feed.image})`}}
+        style={{backgroundImage: `url(${feed.imageUrl})`}}
         >
             <div className="actions">
-                <div onClick={handleLike} className={`like ${liked ? 'active' : ''}`}>
+                <div onClick={()=> like(isAuth ? user.id : token, feed)} className={`like ${liked ? 'active' : ''}`}>
                     <Icon name={"heart-outline"} fill={'#fff'} size="medium" />
                     <div className="count">{feed.likes.length}</div>
                 </div>
-                <div onClick={()=> isAuth ? addToWishList(user.id) : ()=>{}} className={`wish ${wishlisted ? 'active' : ''}`}>
+                <div onClick={()=> addToWishList(isAuth ? user.id : token, feed)} className={`wish ${wishlisted ? 'active' : ''}`}>
                     <Icon name={"star-outline"} fill={'#fff'} size="medium" />
                     <div className="count" style={{background: "#FF9900"}}>{feed.wishlist.length}</div>
                 </div>
@@ -47,8 +45,8 @@ const FeedCard = ({feed}) => {
             <Link className="details" to={`/preview-product/${feed.id}`} onClick={onViewItem}>
                     <h3>{feed.name}</h3>
                     <p>{feed.size} Size</p>
-                    <p><small>GHC</small><span>{feed.price}</span></p>
-                    <div className="status">{feed.status}</div>
+                    <p><small>GHC</small><span>{parseFloat(feed.price).toFixed(2)}</span></p>
+                    <div style={{background: getStatus(feed.status).color}} className="status">{getStatus(feed.status).value}</div>
             </Link>
             <style jsx>{`
                 .feed-card{
@@ -185,7 +183,6 @@ const FeedCard = ({feed}) => {
                     left: 20px;
                     padding: 5px 10px;
                     border-radius: 8px;
-                    background-color: var(--warning-color);
                     font-size: 12px;
                 }
 

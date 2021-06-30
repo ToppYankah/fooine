@@ -1,6 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { v4 } from 'uuid';
 import api from '../api';
-import { useJWT } from '../hooks';
+import firebase from '../firebase';
+import { useToken, useAuthToken } from '../hooks/token';
+import {generate as generateHash} from 'password-hash';
 
 const AuthContext = React.createContext();
 
@@ -12,8 +15,53 @@ function AuthProvider({ children }) {
     const [user, setUser] = useState({});
     const [isAuth, setIsAuth] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [jwt, setJwt] = useJWT();
     const [error, setError] = useState("");
+    const [token, setToken] = useToken();
+    const [authToken, setAuthToken] = useAuthToken();
+
+    // initializing firestore refs
+    const store = firebase.firestore();
+    const usersRef = store.collection('users');
+    const tokensRef = store.collection('tokens')
+
+    useEffect(() => {
+        setLoading(true);
+        if(authToken && authToken !== ""){
+            getUserDetails();
+        }else{
+            setAnonymous(v4())
+        }
+    }, []);
+
+    const getUserDetails = ()=>{
+        usersRef.doc(authToken).get()
+        .then(uref=>{
+            setUser(uref.data());
+            setIsAuth(true);
+            setLoading(false);
+        })
+        .catch(error=>{
+            setLoading(false);
+            console.log(error);
+        })
+    }
+
+    const setAnonymous = (temp_id)=>{
+        setLoading(true);
+        if(!token){
+            tokensRef.doc().set({id: temp_id})
+            .then(_=>{
+                setToken(temp_id);
+                setLoading(false);
+            })
+            .catch(err=>{
+                console.log(err);
+                setLoading(false);
+            });
+        }else{
+            setLoading(false);
+        }
+    }
 
     const throwError = (err)=>{
         setError(err);
@@ -22,53 +70,52 @@ function AuthProvider({ children }) {
         }, 2000)
     }   
 
-    const presetUser = (user)=>{
-        if(user !== null && jwt){
-            setUser(user);
-            setIsAuth(true);
-        }
-    }
-
-    const login = (data) => {
+    const login = ({email, password}) => {
         setLoading(true);
-        setTimeout(()=>{
-            const result = api.loginUser(data);
-            console.log(result);
-            if(result.success){
-                setUser(result.user);
-                setJwt(result.token);
+        usersRef.get().then(snapshot=>{
+            console.log("success", snapshot);
+            let foundUser = null;
+            snapshot.forEach(function(childSnapshot) {
+                var data = childSnapshot.data();
+                if(data.email === email && generateHash(data.password) === password){
+                    foundUser = data;
+                }
+            });
+            if(foundUser){
+                setToken("");
+                setAuthToken(foundUser.id);
+                setUser(foundUser);
                 setIsAuth(true);
-                setLoading(false);
             }else{
-                throwError(result.error)
-                setLoading(false);
+                throwError("User does not exist");
             }
-        }, 2000)
+            setLoading(false);
+        }).catch(error=>{
+            console.log(error);
+            setLoading(false);
+        })
     }
 
     const signup = (data) => {
         setLoading(true);
         if(data.password === data.c_password){
-            if(data.password.length < 8) {
+            const userID = v4();
+            setAuthToken(userID);
+            usersRef.doc(userID).set({...data, id: userID, password: generateHash(data.password)})
+            .then(uref=>{
+                delete data.password;
+                setToken("");
+                setAuthToken(userID);
+                setUser(data);
+                setIsAuth(true);
                 setLoading(false);
-                return throwError("Password should have at least 8 characters")
-            }
-
-            const result = api.signupUser(data);
-            return setTimeout(()=>{
-                if(result.success){
-                    setUser(result.user);
-                    setJwt(result.token);
-                    setIsAuth(true);
-                    setLoading(false);
-                }else{
-                    throwError(result.error)
-                    setLoading(false);
-                }
-            }, 2000)
+            }).catch(error=>{
+                console.log(error);
+            });
+        }else{
+            setLoading(false);
+            throwError("Passwords does not match")
         }
-        setLoading(false);
-        throwError("Passwords does not match")
     }
 
     const logout = () => {
@@ -85,7 +132,7 @@ function AuthProvider({ children }) {
     return (
         <AuthContext.Provider value={{
             user, isAuth, loading, error,
-            login, signup, logout, presetUser
+            login, signup, logout,
         }}>
             {children}
         </AuthContext.Provider>

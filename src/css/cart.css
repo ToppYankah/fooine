@@ -119,9 +119,12 @@
 
 .checkout-page .body .delivery-address .choose-delivery {
   display: flex;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 5px;
   align-items: center;
   justify-content: center;
   padding: 0 5%;
+  margin: 20px 0;
 }
 
 .checkout-page .body .label {
@@ -129,26 +132,40 @@
   padding-bottom: 0px;
   font-size: 12px;
   font-weight: bold;
-  color: #aaa;
+  color: #777;
+}
+
+.checkout-page .email-setup .email-input {
+  padding: 10px 5%;
+}
+
+.checkout-page .email-setup input {
+  width: 100%;
+  border: none;
+  padding: 10px 5%;
+  font-size: 12px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  outline: none;
 }
 
 .checkout-page .body .choose-delivery button {
   padding: 10px 20px;
-  margin: 20px 0px;
-  margin-top: 10px;
+  margin: 0px 0px;
+  margin-bottom: 0;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   flex: 1;
 }
-.checkout-page .body .choose-delivery button:first-child {
+/* .checkout-page .body .choose-delivery button:first-child {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
 .checkout-page .body .choose-delivery button:last-child {
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
-}
+} */
 .checkout-page .body .choose-delivery button.selected {
   background-color: var(--dark-color);
   color: #fff;
@@ -158,6 +175,16 @@
   padding: 0 5%;
   display: flex;
   flex-direction: column;
+}
+
+.checkout-page .delivery-address .address-form .warning {
+  padding: 10px 15px;
+  border-left: 3px solid orangered;
+  background-color: rgba(255, 68, 0, 0.11);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  display: flex;
+  margin-bottom: 10px;
 }
 
 .checkout-page .body textarea {

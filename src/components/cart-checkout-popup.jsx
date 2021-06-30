@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import Icon from 'react-eva-icons/dist/Icon';
+import { usePaystackPayment } from 'react-paystack';
 import { Route, Link, useHistory } from 'react-router-dom';
 import '../css/cart.css';
-import { useTempToken } from '../hooks';
-import useAuthentication from '../hooks/auth';
+import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useCart } from '../providers/cartProvider';
-import { useProducts } from '../providers/productProvider';
+import { useProducts, getStatus } from '../providers/productProvider';
 import EmptyView from './empty_view';
+import InputBox from './input_box';
+
+const regions = [
+    "Ahafo", "Ashanti", "Bono", "Bono East", "Central", "Eastern", "Greater Accra", "North East", "Northern", "Oti", "Savannah", "Upper East", "Upper West", "Volta", "Western", "Western North"
+];
 
 const CartCheckoutPopup = () => {
     const history = useHistory();
@@ -41,7 +47,17 @@ const CartPage = ({onClose})=>{
         document.body.style.overflow = "hidden";
     }, []);
 
-    const {cart, checkOut, getCheckoutTally} = useCart();
+    const {cart, checkOut} = useCart();
+    const {getProductById} = useProducts();
+
+    function getCheckoutTally(){
+        let output = 0;
+        checkOut.forEach(itemId=>{
+            const productPrice = parseFloat(getProductById(itemId).price);
+            output += productPrice;
+        });
+        return output;
+    }
 
     return <div className="cart-page">
         <div className="header">
@@ -51,7 +67,7 @@ const CartPage = ({onClose})=>{
         <div className="body">
             {cart.length < 1 ? 
             <EmptyView message="Your cart is Empty" icon="shopping-cart-outline"/> : 
-            cart.map((item, id) => <CartItem item={item} />
+            cart.map((itemId, id) => <CartItem key={id} item={getProductById(itemId)} />
             )}
         </div>
         {cart.length > 0 && checkOut.length > 0 ? <div className="footer">
@@ -63,8 +79,8 @@ const CartPage = ({onClose})=>{
 
 const CartItem = ({item})=>{
     const {removeFromCheckout, addToCheckout, removeFromCart, checkOut} = useCart();
-    const {user} = useAuth();
-    const [token] = useAuthentication();
+    const {user, isAuth,} = useAuth();
+    const [token] = useToken();
 
     return (
         <div className="item">
@@ -72,16 +88,16 @@ const CartItem = ({item})=>{
                 <div onClick={()=> checkOut.includes(item.id) ? removeFromCheckout(item.id) : addToCheckout(item.id)} className={`checker ${checkOut.includes(item.id) ? 'on' : ''}`}></div>
             </div>
             <div className="details">
-                <div className="img" style={{backgroundImage: `url(${item.image})`}}></div>
+                <div className="img" style={{backgroundImage: `url(${item.imageUrl})`}}></div>
                 <Link to={`/preview-product/${item.id}`} className="info">
                     <h3>{item.name}</h3>
                     <p className="size">{item.size}</p>
                     <p className="size">{item.category}</p>
-                    <span className="tag">{item.status}</span>
+                    <span className="tag">{getStatus(item.status).value}</span>
                 </Link >
                 <div className="price">
-                    <p><small>GHC</small><span>{item.price}</span></p>
-                    <span onClick={()=>removeFromCart(user.id ? user.id : token, item)} style={{color: "#ccc", fontSize: 12}}>- Remove -</span>
+                    <p><small>GHC</small><span>{parseFloat(item.price).toFixed(2)}</span></p>
+                    <span onClick={()=>removeFromCart(isAuth ? user.id : token, item.id)} style={{color: "#ccc", fontSize: 12}}>- Remove -</span>
                 </div>
             </div>
             <style jsx>{`
@@ -168,52 +184,130 @@ const CartItem = ({item})=>{
 const CheckoutPage = ({onClose})=>{
     const [deliveryId, setDeliveryId] = useState(0);
     const [deliveryAddress, setDeliveryAddress] = useState("");
-    const {getCheckoutTally, getProductsForCheckout, clearCheckedOut} = useCart();
+    const {clearCheckedOut, checkOut} = useCart();
     const [deliveryFee, setDeliveryFee] = useState(0)
+    const {markProductsAsSold, getProductById} = useProducts();
     const [totalPayment, setTotalPayment] = useState(getCheckoutTally() + deliveryFee);
-    const {markProductsAsSold} = useProducts();
-    const {user} = useAuth();
-    const [token, loading] = useAuthentication();
+    const {user, isAuth} = useAuth();
+    const [token] = useToken();
+    const [email, setEmail] = useState(isAuth ? user.email : "");
+    const history = useHistory();
+
+    console.log(process.env.REACT_APP_PUBLIC_PAYSTACK_API_KEY)
+
+    const initializePayment = usePaystackPayment({
+        reference: (new Date()).getTime(),
+        email: email,
+        amount: totalPayment * 100,
+        currency: 'GHS',
+        publicKey: process.env.REACT_APP_PUBLIC_PAYSTACK_API_KEY,
+    });
 
     useEffect(() => {
         setTotalPayment(getCheckoutTally() + deliveryFee)
     }, [deliveryFee]);
 
-     useEffect(() => {
+    useEffect(() => {
+        if(checkOut.length < 1){
+            history.replace('/cart');
+        }
         document.body.style.overflow = "hidden";
     }, []);
 
-    const handleCheckout = ()=>{
-        // instantiate paystack for payment
-        markProductsAsSold(getProductsForCheckout())
-        clearCheckedOut(user.id ? user.id : token);
-        onClose();
+    function getCheckoutTally(){
+        let output = 0;
+        checkOut.forEach(itemId=>{
+            output += parseFloat(getProductById(itemId).price);
+        });
+        return output;
     }
 
-    return <div className="checkout-page">
+    function getProductsForCheckout(){
+        let output = [];
+
+        checkOut.forEach(itemId=>{
+            output.push(getProductById(itemId));
+        })
+
+        return output;
+    }
+
+    const handleCheckout = (e)=>{
+        e.preventDefault();
+        // initialize paystack for payment
+        initializePayment(
+        ({ transaction, reference, status }) => {
+            // implementation for  whatever you want to do when the Paystack dialog closed.
+            console.log("status", status);
+            markProductsAsSold(getProductsForCheckout())
+            clearCheckedOut(isAuth ? user.id : token);
+            onClose();
+        }, () => {
+            // implementation for  whatever you want to do when the Paystack dialog closed.
+            console.log('closed')
+        })
+    }
+
+    return <form onSubmit={handleCheckout} className="checkout-page">
         <div className="header">
             <h3>Checkout</h3>
             <div onClick={onClose} className="close-btn">{'<'}</div>
         </div>
         <div className="body">
             <ProductsViewForCheckout checkoutProducts={getProductsForCheckout()} />
+            {isAuth ? <></> :<div className="email-setup">
+                <div className='label'>
+                    Email Address
+                </div>
+                <div className="email-input">
+                    <input autoFocus required value={email} name="email" type="email" placeholder="Enter your email address" onChange={({target: {value}})=> setEmail(value)} />
+                </div>
+            </div>}
             <div className="delivery-address">
                 <div className='label'>
                     Delivery Setup
                 </div>
                 <div className="choose-delivery">
-                    <button className={`${deliveryId == 0 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(0); setDeliveryFee(0)}}>Self Claim</button>
-                    <button className={`${deliveryId == 1 ? 'selected' : ''}`} onClick={()=> setDeliveryId(1)}>Doors Step</button>
+                    <button className={`${deliveryId == 0 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(0); setDeliveryFee(0)}}>Pick up</button>
+                    <button className={`${deliveryId == 1 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(1); setDeliveryFee(0)}}>Parcel Office</button>
+                    {/* <button className={`${deliveryId == 2 ? 'selected' : ''}`} onClick={()=> setDeliveryId(2)}>Doors Step</button> */}
+                    <button className={`${deliveryId == 3 ? 'selected' : ''}`} onClick={()=> setDeliveryId(3)}><pre>Discounted shipping</pre></button>
                 </div>
-                {deliveryId == 1 ? <div className="address-form">
+                {deliveryId == 1 ? 
+                <div className="address-form">
+                    <div className="warning">
+                        <Icon name="info-outline" size="large" fill="orangered" />
+                        <span style={{marginLeft: 10}}>By using this delivery option, you agree to pick your order at our designated partner's parcel office in your region.</span>
+                    </div>
                     <select name="area-range" onChange={({target})=> {setDeliveryFee(target.value == "" ? 0 : parseFloat(target.value));}} id="area-range">
-                        <option value="">Select your area</option>
+                        <option value="">Select your region</option>
+                        <option value="10.00">Kumasi - 10.00</option>
+                        <option value="50.00">Cape Coast - 50.00</option>
+                        <option value="30.00">Accra - 30.00</option>
+                        <option value="70.00">Tema - 70.00</option>
+                    </select>
+                </div> : <></>}
+                {deliveryId == 2 ? 
+                <div className="address-form">
+                    <select name="area-range" onChange={({target})=> {setDeliveryFee(target.value == "" ? 0 : parseFloat(target.value));}} id="area-range">
+                        <option value="">Select your region</option>
                         <option value="10.00">Kumasi - 10.00</option>
                         <option value="50.00">Cape Coast - 50.00</option>
                         <option value="30.00">Accra - 30.00</option>
                         <option value="70.00">Tema - 70.00</option>
                     </select>
                     <textarea value={deliveryAddress} onChange={(input)=> setDeliveryAddress(input.value)} placeholder="Enter delivery address"></textarea>
+                </div> : <></>}
+                {deliveryId == 3 ? 
+                <div className="address-form">
+                    <div className="warning">
+                        <Icon name="info-outline" size="large" fill="orangered" />
+                        <span style={{marginLeft: 10}}>Note: Discounted shipping is our cheapest shipping option to help you save on your order. This can take anywhere from 7-14 days to be delivered to our designated parcel office in your region.</span>
+                    </div>
+                    <select name="area-range" onChange={({target})=> {setDeliveryFee(target.value == "" ? 0 : parseFloat(target.value));}} id="area-range">
+                        <option value="">Select your region</option>
+                        {regions.map(region=> <option value="5.00">{region}</option>)}
+                    </select>
                 </div> : <></>}
             </div>
             <div className="amount-payable">
@@ -237,9 +331,9 @@ const CheckoutPage = ({onClose})=>{
             </div>
         </div>
         <div className="footer">
-            <button onClick={handleCheckout} className="submit-btn" style={{marginRight: 0}}>Accept Checkout</button>
+            <button type="submit" className="submit-btn" style={{marginRight: 0}}>Accept Checkout</button>
         </div>
-    </div>
+    </form>
 }
 
 const ProductsViewForCheckout = ({checkoutProducts})=>{
@@ -249,12 +343,12 @@ const ProductsViewForCheckout = ({checkoutProducts})=>{
         <button onClick={()=> setHide(!hide)} className="toggler">{hide ? 'See Products' : 'Hide Products'}</button>
         <div className={`items-container ${hide ? "hidden" : ''}`}>
             {checkoutProducts.map(item=> <div className='item'>
-                <img src={item.image} width={50} height={50} style={{objectFit: "cover"}} alt={item.name} />
+                <img src={item.imageUrl} width={50} height={50} style={{objectFit: "cover"}} alt={item.name} />
                 <div className="info">
                     <p><b>{item.name}</b></p>
                     <p style={{color: "#777"}}>{item.size} Size</p>
                 </div>
-                <span className="price"><small>GHC</small>{item.price}</span>
+                <span className="price"><small>GHC</small>{parseFloat(item.price).toFixed(2)}</span>
             </div>)}
         </div>
         <style jsx>{`
