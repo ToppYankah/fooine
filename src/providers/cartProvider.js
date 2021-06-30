@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import api from '../api';
-import { useAuth } from './authProvider';
+import firebase from '../firebase';
 
 const CartContext = React.createContext();
 
@@ -13,52 +13,50 @@ function CartProvider({ children }) {
     const [checkOut, setCheckOut] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const cartRef = firebase.firestore().collection('carts');
+
     const getCart = (key)=>{
         setLoading(true);
         if(key){
-            const result = api.getUserCart(key);
-            console.log(result);
-            if(result.success){
-                setCart(result.cart);
-            }
+            cartRef.doc(key).onSnapshot(snapshot=>{
+                if(snapshot.data()){
+                    setCart(()=> snapshot.data().cart || [])
+                }
+                console.log(snapshot.data());
+            })
         }
     }
 
-    const addToCart = (key, item)=>{
+    const addToCart = (key, itemId)=>{
         setLoading(true);
-        if(item != null && !cart.includes(item)){
-            const result = api.addProductToCart(key, item.id);
-            console.log(result)
-            if(result.success){
-                const newCart = cart;
-                newCart.unshift(item);
-                setCart(newCart.map(prod=> prod));
-                
-                // update ready for checkout
-                const newCheckoutList = checkOut;
-                newCheckoutList.push(item.id);
-                setCheckOut(newCheckoutList.map(item=> item));
-            }
+        if(itemId != null && !cart.includes(itemId)){
+            const newCart = [...cart, itemId];
+            cartRef.doc(key).set({cart: newCart})
+            .then(_=>{
+                setCart(newCart.map(item => item));
+                setLoading(false);
+            })
+            .catch(err=>{
+                console.log(err);
+                setLoading(false);
+            })
         }
-        setLoading(false);
     }
 
-    const removeFromCart = (key, item)=>{
+    const removeFromCart = (key, itemId)=>{
         setLoading(true);
-        if(item && cart.includes(item) && cart.length > 0){
-            const result = api.removeProductFromCart(key, item.id);
-            console.log(result)
-            if(result.success){
-                const newCart = cart.filter(filterItem=> filterItem.id !== item.id);
+        if(itemId && cart.includes(itemId) && cart.length > 0){
+            const newCart = cart.filter(id=> id !== itemId);
+            cartRef.doc(key).set({cart: newCart})
+            .then(_=>{
                 setCart(newCart.map(item=> item));
-    
-                // update ready for checkout
-                const newCheckoutList = checkOut;
-                newCheckoutList.filter(id=> id !== item.id);
-                setCheckOut(newCheckoutList.map(item=> item));
-            }
+                setLoading(false);
+            })
+            .catch(err=>{
+                console.log(err);
+                setLoading(false);
+            })
         }
-        setLoading(false);
     }
 
     const removeFromCheckout = (id)=>{
@@ -72,36 +70,19 @@ function CartProvider({ children }) {
         setCheckOut(newCheckoutList.map(item=> item));
     }
 
-    const getCheckoutTally = ()=>{
-        let output = 0;
-
-        cart.forEach(item=>{
-            if(checkOut.includes(item.id)){
-                output += parseFloat(item.price);
-            }
-        });
-
-        return output;
-    }
-
-    const getProductsForCheckout = ()=>{
-        let output = [];
-
-        cart.forEach(item=>{
-            if(checkOut.includes(item.id)){
-                output.push(item);
-            }
-        });
-
-        return output;
-    }
-
     const clearCheckedOut = (key)=>{
-        const toBeCleared = getProductsForCheckout().map(item=> item.id);
-        const result = api.clearCheckedOut(key, toBeCleared);
-        if(result.success){
-            setCart(cart.filter(item=> !toBeCleared.includes(item.id)));
-        }
+        // remove checkedout cart items
+        console.log("clearing checkout...");
+        const newCart = cart.filter(id=> !checkOut.includes(id));
+        cartRef.doc(key)
+        .update({cart: [...newCart]})
+        .then(_=>{
+            console.log("cleared successfully...");
+            setCheckOut([]);
+            setCart([...newCart]);
+        }).catch(error=> {
+            console.log(error);
+        })
     }
 
     return (
@@ -109,7 +90,6 @@ function CartProvider({ children }) {
             cart, loading, checkOut,
             addToCart, removeFromCart, 
             removeFromCheckout, addToCheckout,
-            getCheckoutTally, getProductsForCheckout,
             clearCheckedOut, getCart
         }}>
             {children}

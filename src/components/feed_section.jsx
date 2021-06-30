@@ -112,7 +112,7 @@ const QuickAccessFeedSection = ({feeds, onClickFeed})=>{
             <hr /><b>Quick Feed</b><hr />
         </div>
         <div id="quick-feed" className="quick-access-feed">
-            {feeds.map((feed, id)=><Link to={`/preview-product/${feed.id}`} key={id} className='quick-feed' style={{backgroundImage: `url(${feed.image})`}}></Link>)}
+            {feeds.map((feed, id)=><Link to={`/preview-product/${feed.id}`} key={id} className='quick-feed' style={{backgroundImage: `url(${feed.imageUrl})`}}></Link>)}
         </div>
             <style jsx>{`
                 .quick-access-feed{

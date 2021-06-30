@@ -3,10 +3,22 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// import FirebaseProvider from './firebase/index';
+import ProductsProvider from './providers/productProvider';
+import AuthProvider from './providers/authProvider';
+import CartProvider from './providers/cartProvider';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/* <FirebaseProvider> */}
+      <AuthProvider>
+        <ProductsProvider>
+          <CartProvider>
+              <App />
+          </CartProvider>
+        </ProductsProvider>
+      </AuthProvider>
+    {/* </FirebaseProvider> */}
   </React.StrictMode>,
   document.getElementById('root')
 );

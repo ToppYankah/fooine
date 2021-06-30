@@ -1,25 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { useParams } from 'react-router-dom';
-import useAuthentication from '../hooks/auth';
+import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useCart } from '../providers/cartProvider';
-import { useProducts } from '../providers/productProvider';
+import { useProducts, getStatus } from '../providers/productProvider';
+import Loader from './simple_loader';
 
 const ProductViewPage = () => {
     const params = useParams();
-    const {products, holdProduct, unholdProduct} = useProducts();
+    const {products, comment, getProductById, loading: productsLoading} = useProducts();
     const {cart, addToCart, removeFromCart} = useCart();
-    const {user} = useAuth();
-    const [token, loading] = useAuthentication();
+    const [token] = useToken();
+    const {isAuth, user, loading: AuthLoading} = useAuth();
     const [held, setHeld] = useState(false);
     const [inCart, setInCart] = useState(false);
-    const product = products.filter(prod => prod.id === parseInt(params.id))[0];
+    const [commentMsg, setCommentMsg] = useState("");
+    const product = getProductById(params.id);
 
     useEffect(() => {
-        setHeld(product.heldBy === 1)
-        setInCart(cart.includes(product))
+        setHeld(product.heldBy && product.heldBy !== "")
+        setInCart(cart.includes(product.id));
     }, [cart, products]);
+
+    const handleComment = (e)=>{
+        e.preventDefault();
+        if(commentMsg && commentMsg !== ""){
+            comment( isAuth ? user.name : "Unknown", commentMsg, product);
+            setCommentMsg("");
+        }
+    }
 
     const onClosePage = ()=>{
         // remove current feed
@@ -31,12 +41,12 @@ const ProductViewPage = () => {
 
     return (
         <div className='single-product-page'>
-            <div className="close-sheet" onClick={onClosePage}></div>
+            {productsLoading || AuthLoading ? <Loader /> : <><div className="close-sheet" onClick={onClosePage}></div>
             <div className={`main-page`}>
                 <div className="close-button" onClick={onClosePage}>
                     <Icon name="close" fill="#ffffff" size="medium" />
                 </div>
-                <div className="img-box" style={{backgroundImage: `url(${product.image})`}}></div>
+                <div className="img-box" style={{backgroundImage: `url(${product.imageUrl})`}}></div>
                 <div className="mute-heading">
                     <hr /><b>Details</b><hr />
                 </div>
@@ -45,36 +55,35 @@ const ProductViewPage = () => {
                         <h2 style={{marginBottom: 10}}>{product.name}</h2>
                         <div style={{marginBottom: 10}}>
                             <span className="tag" style={{marginRight: 10}}>{product.size} Size</span>
-                            <span className="tag">{product.status}</span>
+                            <span className="tag">{getStatus(product.status).value}</span>
                         </div>
                     </div>
                     <div>
-                        <p className='price'>GHC <b style={{fontSize: 25}}>{product.price}</b></p>
+                        <p className='price'>GHC <b style={{fontSize: 25}}>{parseFloat(product.price).toFixed(2)}</b></p>
                     </div>               
                 </div>
                 <div className="purchase-actions">
-                    <button onClick={()=> held ? unholdProduct(product.id) : holdProduct(product.id, 1)} id="hold">
+                    {/* <button onClick={()=> held ? unholdProduct(product.id) : holdProduct(product.id, 1)} id="hold">
                         <Icon name="pause-circle-outline" size="medium" fill="var(--dark-color)" />
                         <b>{held ? "Unhold Item" : "Hold Item"}</b>
-                    </button>
-                    <button onClick={()=> inCart ? removeFromCart(user.id ? user.id : token, product) : addToCart(user.id ? user.id : token, product)} id="add-to-cart">
+                    </button> */}
+                    {product.status !== 2 ? <button onClick={()=> inCart ? removeFromCart(isAuth ? user.id : token, product.id) : addToCart(isAuth ? user.id : token, product.id)} id="add-to-cart">
                         <Icon name="shopping-cart-outline" size="medium" fill="#fff" />
                         <b>{inCart ? 'Remove from cart' : 'Add to cart'}</b>
-                    </button>
+                    </button> : <></>}
                 </div>
                 <div className="mute-heading">
                     <hr /><b>Comments</b><hr />
                 </div>
                 <div className="comment-section">
-                    <div className="comment-input">
-                        <input type="text" placeholder="Leave a comment on this item" />
-                    </div>
+                    <form onSubmit={handleComment} className="comment-input">
+                        <input type="text" value={commentMsg} onChange={({target: {value}})=> setCommentMsg(value)} placeholder="Leave a comment on this item" />
+                    </form>
                     <div className="comments-list">
-                        <Comment />
-                        <Comment />
+                        {product.comments.map(comment => <Comment  comment={comment}/>)}
                     </div>
                 </div>
-            </div>
+            </div> </>}
             <style jsx>{`
                 .single-product-page{
                     position: fixed;
@@ -223,8 +232,8 @@ const ProductViewPage = () => {
                     display: flex;
                     align-items: center;
                     padding: 5px 10px;
-                    background-color: #fafafa;
-                    border-radius: 20px;
+                    background-color: #f0f0f0;
+                    border-radius: 10px;
                 }
 
                 .comment-input input{
@@ -241,20 +250,22 @@ const ProductViewPage = () => {
                     margin-top: 20px;
                     padding: 0px 20px;
                 }
+                .comments-list::-webkit-scrollbar{
+                    display: none;
+                    width: 2px;
+                }
             `}</style>
         </div>
     );
 }
 
-const Comment = ()=>{
+const Comment = ({comment})=>{
     return <div className="comment">
         <div className="user-name">
             <Icon name="person-outline" fill="#777" size='medium'></Icon>
-            <b style={{marginLeft: 10, fontSize: 13}}>Kenneth Topp Yankah</b>
+            <b style={{marginLeft: 10, fontSize: 13}}>{comment.by}</b>
         </div>
-        <div className="message">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit, reprehenderit.
-        </div>
+        <div className="message">{comment.comment}</div>
         <style jsx>{`
             .comment{
                 display: flex;
@@ -264,16 +275,17 @@ const Comment = ()=>{
             .comment .user-name{
                 display: flex;
                 align-items: center;
-                color: var(--dark-color)
             }
             .comment .message{
                 padding: 5px 0;
                 padding-bottom: 15px;
-                margin-left: 8%;
+                margin-left: 6.5%;
                 font-size: 12px;
-                color: #aaa;
+                color: #555;
                 border-bottom: 1px solid #f0f0f0;
-                font-weight: 300
+                font-weight: 300;
+                letter-spacing: 0.5px;
+                font-weight: 300;
             }
         `}</style>
     </div>

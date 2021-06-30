@@ -1,16 +1,4 @@
-import axios from "axios";
 import db from '../sampleDb.json';
-
-export const API_BASE_URL = 'api_url_here';
-
-const client = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// const db = database;
 
 const generatePassword = (password)=>{
     let passwordhash = "";

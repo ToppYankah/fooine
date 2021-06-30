@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const CategoryMenu = ({categories, onChange}) => {
     const [selectedId, setSelectedId] = useState('');
+
     useEffect(() => {
         const menuScrollView = document.getElementById('scroll-menu');
         let Menupos = { top: 0, left: 0, x: 0, y: 0 };
@@ -54,8 +55,8 @@ const CategoryMenu = ({categories, onChange}) => {
             </div>
             {categories.map((category, id)=>{ 
                 return (
-            <div key={id} onClick={()=>selectCategory(category.id)} 
-            className={`item ${selectedId===category.id ? 'select' : ''}`}
+            <div key={id} onClick={()=>selectCategory(category.name)} 
+            className={`item ${selectedId===category.name ? 'select' : ''}`}
             >
                 <pre>{category.name}</pre>
                 </div>
