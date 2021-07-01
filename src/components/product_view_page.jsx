@@ -111,7 +111,6 @@ const ProductViewPage = () => {
 
                 .single-product-page .main-page{
                     margin: 0 auto;
-                    padding: 40px 40px;
                     max-width: 550px;
                     width: 100%;
                     background: #fff;
@@ -158,12 +157,13 @@ const ProductViewPage = () => {
                     justify-content: center;
                     font-size: 25px;
                     cursor: pointer;
+                    z-index: 1;
                 }
 
                 .single-product-page .img-box{
                     width: 100%;
                     min-height: 500px;
-                    border-radius: 20px;
+                    border-radius: 0px;
                     background-color: var(--light-color);
                     background-size: cover;
                     background-position: center;
@@ -171,6 +171,7 @@ const ProductViewPage = () => {
                 }
                 .single-product-page .details{
                     display: flex;
+                    padding: 0 10%;
                 }
 
                 .single-product-page .details h2{
@@ -201,7 +202,7 @@ const ProductViewPage = () => {
 
                 .single-product-page .purchase-actions{
                     display: flex;
-                    padding: 15px 0;
+                    padding: 15px 10%;
                     align-items: center;
                 }
 
@@ -230,6 +231,10 @@ const ProductViewPage = () => {
                 }
                 #add-to-cart{
                     background: var(--dark-color);
+                }
+
+                .comment-section{
+                    padding: 0 10%;
                 }
 
                 .comment-input{
