@@ -21,6 +21,7 @@ function CartProvider({ children }) {
             cartRef.doc(key).onSnapshot(snapshot=>{
                 if(snapshot.data()){
                     setCart(()=> snapshot.data().cart || [])
+                    setCheckOut(()=> snapshot.data().cart || [])
                 }
                 console.log(snapshot.data());
             })
@@ -34,6 +35,7 @@ function CartProvider({ children }) {
             cartRef.doc(key).set({cart: newCart})
             .then(_=>{
                 setCart(newCart.map(item => item));
+                setCheckOut([...checkOut, itemId])
                 setLoading(false);
             })
             .catch(err=>{
@@ -44,12 +46,14 @@ function CartProvider({ children }) {
     }
 
     const removeFromCart = (key, itemId)=>{
+        console.log("removing from cart")
         setLoading(true);
         if(itemId && cart.includes(itemId) && cart.length > 0){
             const newCart = cart.filter(id=> id !== itemId);
             cartRef.doc(key).set({cart: newCart})
             .then(_=>{
                 setCart(newCart.map(item=> item));
+                setCheckOut(checkOut.filter(item=> item !== itemId));
                 setLoading(false);
             })
             .catch(err=>{

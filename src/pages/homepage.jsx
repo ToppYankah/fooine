@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CategoryMenu from '../components/category_menu';
-import FeedSection from '../components/feed_section';
+import LiveFeedSection from '../components/feed_section';
 import HomeHeader from '../components/home_header';
 import LoginForm from '../components/login_form';
 import { useProducts } from '../providers/productProvider';
@@ -9,10 +9,13 @@ import SignupForm from '../components/signup_form';
 import CartCheckoutPopup from '../components/cart-checkout-popup';
 import ProductViewPage from '../components/product_view_page';
 import ProfilePopup from '../components/profile_popup';
+import QuickCartView from '../components/quick_cart_view';
+import GalleryViewSection from '../components/gallery-view-section';
+import '../css/home.css';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
-    const { products: _prods, getProducts, categories, searchProducts} = useProducts();
+    const { products: _prods, getProducts, searchProducts} = useProducts();
     const [categoryFilter, setCategoryFilter] = useState("");
     const history = useHistory();
 
@@ -32,25 +35,29 @@ const HomePage = () => {
 
     return (
         <div id='homepage'>
-            <><HomeHeader onSearch={handleSearch} />
-                    <CategoryMenu categories={categories} onChange={(categoryId)=> setCategoryFilter(categoryId)} />
-                    <FeedSection products={products} />
-                    <Route path="/login">
-                        <LoginForm />
-                    </Route>
-                    <Route path="/signup">
-                        <SignupForm />
-                    </Route>
-                    <Route path="/cart">
-                        <CartCheckoutPopup />
-                    </Route>
-                    <Route path="/profile">
-                        <ProfilePopup />
-                    </Route>
-                    <Route path="/preview-product/:id">
-                        <ProductViewPage />
-                    </Route>
-                </>
+            <>
+                <HomeHeader onSearch={handleSearch} />
+                <div className="page-body">
+                    <LiveFeedSection products={products} />
+                    <GalleryViewSection />
+                </div>
+                <Route path="/login">
+                    <LoginForm />
+                </Route>
+                <Route path="/signup">
+                    <SignupForm />
+                </Route>
+                <Route path="/cart">
+                    <CartCheckoutPopup />
+                </Route>
+                <Route path="/profile">
+                    <ProfilePopup />
+                </Route>
+                <Route path="/preview-product/:id">
+                    <ProductViewPage />
+                </Route>
+                <QuickCartView />
+            </>
         </div>
     );
 }

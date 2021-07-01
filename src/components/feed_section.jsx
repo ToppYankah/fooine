@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import FeedCard from './feed_card';
+import LiveFeedCard from './feed_card';
 import { Link } from 'react-router-dom';
 
-const FeedSection = ({products}) => {
+const LiveFeedSection = ({products}) => {
     useEffect(() => {
         const feedsScrollView = document.getElementById('scroll-feed');
         let feedsPos = { top: 0, left: 0, x: 0, y: 0 };
@@ -45,16 +45,109 @@ const FeedSection = ({products}) => {
 
     return (
         <div className='feed-section'>
-            <div className="inner" id="scroll-feed">
-                {products.map((feed, id)=>(<FeedCard feed={feed} key={id} />))}
+            <div className="live-notice">
+                <hr />
+                <div className="inner">
+                    <div className="indicator"></div>
+                    <p>Live Feed</p>
+                </div>
+                <hr />
             </div>
-            <QuickAccessFeedSection feeds={products} />
-            <style jsx="true">{`
+            <div className="inner" id="scroll-feed">
+                {products.map((feed, id)=>(<LiveFeedCard feed={feed} key={id} />))}
+            </div>
+            <div className="vanishing-point left"></div>
+            <div className="vanishing-point right"></div>
+            {/* <QuickAccessFeedSection feeds={products} /> */}
+            <style jsx>{`
+                .feed-section{
+                    min-height: 100%;
+                }
                 .feed-section .inner{
-                    padding: 50px 5%;
+                    padding: 20px 5%;
                     display: flex;
                     align-items: center;
                     overflow: auto;
+                }
+
+                .feed-section .live-notice{
+                    padding: 10px 0;
+                    display: flex;
+                    align-items: center;
+                    padding-bottom: 0;
+                }
+
+                .feed-section .live-notice .inner{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    box-shadow: 0 0 10px #ff00001a;
+                }
+
+                .feed-section .live-notice hr{
+                    flex: 1;
+                    border: none;
+                    border-top: 1px solid;
+                    border-color: #fafafa;
+
+                }
+
+                .feed-section .live-notice p{
+                    font-size: 13px;
+                }
+
+                .feed-section .live-notice .indicator{
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: red;
+                    margin-right: 15px;
+                }
+                .feed-section .live-notice .indicator::after,
+                .feed-section .live-notice .indicator::before
+                {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: inherit;
+                }
+                .feed-section .live-notice .indicator::before{
+                    background: inherit;
+                    animation: glow-scale 1s linear infinite;
+                }
+                .feed-section .live-notice .indicator::after{
+                    border: 1px solid red;
+                    transform: scale(2);
+                    background: transparent;
+
+                }
+
+                @keyframes glow-scale{
+                    100%{
+                        transform: scale(2.2);
+                        opacity: 0;
+                    }
+                }
+
+                .feed-section .vanishing-point{
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    width: 80px;
+                }
+
+                .feed-section .vanishing-point.left{
+                    background: linear-gradient(to right, white, transparent);
+                    left: 0;
+                }
+                .feed-section .vanishing-point.right{
+                    background: linear-gradient(to left, white, transparent);
+                    right: 0;
                 }
 
                 .feed-section .inner::-webkit-scrollbar{
@@ -150,4 +243,4 @@ const QuickAccessFeedSection = ({feeds, onClickFeed})=>{
     )
 }
 
-export default FeedSection;
+export default LiveFeedSection;

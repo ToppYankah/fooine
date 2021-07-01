@@ -3,15 +3,19 @@ import Icon from 'react-eva-icons';
 import { Link } from 'react-router-dom';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
+import { useCart } from '../providers/cartProvider';
 import { useProducts, getStatus } from '../providers/productProvider';
 // import Loader from './simple_loader';
 
-const FeedCard = ({feed}) => {
+const LiveFeedCard = ({feed}) => {
     const {user, isAuth} = useAuth();
     const [token] = useToken();
     const {products, like, addToWishList, share} = useProducts();
+    const {cart, addToCart, removeFromCart} = useCart();
     const [liked, setLiked] = useState(false);
     const [wishlisted, setWishlisted] = useState(false);
+    const productId = feed.id;
+    console.log(productId);
 
     useEffect(() => {
         setLiked(feed.likes.includes(isAuth ? user.id : token))
@@ -22,6 +26,15 @@ const FeedCard = ({feed}) => {
         // set current open feed
         document.body.style.overflow = "hidden";
         // onClick();
+    }
+
+    const handleAddToCart = ()=>{
+        console.log(productId);
+        if(cart.includes(feed.id)){
+            removeFromCart(isAuth ? user.id : token, productId);
+        }else{
+            addToCart(isAuth ? user.id : token, productId);
+        }
     }
 
     return (
@@ -42,22 +55,62 @@ const FeedCard = ({feed}) => {
                     <div className="count" style={{background: "#ffffff", color: "#555"}}>{feed.shares.length}</div>
                 </div>
             </div>
-            <Link className="details" to={`/preview-product/${feed.id}`} onClick={onViewItem}>
+            <div className="details" onClick={onViewItem}>
+                <div style={{background: getStatus(feed.status).color}} className="status">{getStatus(feed.status).value}</div>
+                <Link to={`/preview-product/${feed.id}`} >
                     <h3>{feed.name}</h3>
                     <p>{feed.size} Size</p>
                     <p><small>GHC</small><span>{parseFloat(feed.price).toFixed(2)}</span></p>
-                    <div style={{background: getStatus(feed.status).color}} className="status">{getStatus(feed.status).value}</div>
-            </Link>
+                </Link>
+                {feed.status !== 2 ? <div className="add-section">
+                    <input type="checkbox" checked={cart.includes(feed.id)} name="add-cart" className="add-cart" id={feed.id} onChange={handleAddToCart} />
+                    <div className="check-box">
+                        <Icon name="checkmark-outline" fill="#fff" size="small"/>
+                    </div>
+                    <label for={feed.id}>{cart.includes(feed.id) ? "Remove from cart" : "Add to cart"}</label>
+                </div> : <></>}
+            </div>
             <style jsx>{`
                 .feed-card{
-                    min-width: 350px;
-                    width: 25vw;
-                    min-height: 500px;
+                    min-width: 300px;
+                    min-height: 400px;
                     border-radius: 20px;
                     background-color: #efefef;
                     border: 1px solid #efefef;
                     background-position: center center;
                     background-size: cover;
+                }
+
+                .feed-card .add-section{
+                    display: flex;
+                    align-items: center;
+                    margin-top: 10px;
+                    border-top: 1px solid #ffffff1a;
+                    padding-top: 10px;
+                }
+                .feed-card .add-cart{display: none}
+                .feed-card .add-cart:checked + .check-box{
+                    background: var(--dark-color)
+                }
+                .feed-card .add-cart:checked + .check-box > *{
+                    display: block;
+                }
+                .feed-card .add-section .check-box{
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 50%;
+                    border: 2px solid var(--dark-color);
+                    margin-right: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .feed-card .add-section .check-box > *{
+                    display: none;
+                }
+                .feed-card .add-section label{
+                    font-size: 12px;
+                    cursor: pointer;
                 }
 
                 .feed-card:not(:last-child){
@@ -105,7 +158,7 @@ const FeedCard = ({feed}) => {
                 }
 
                 .feed-card .actions div:nth-child(2){
-                    margin: 10px 0;
+                    margin: 5px 0;
                 }
 
                 .feed-card .actions > div:hover .count{
@@ -147,6 +200,7 @@ const FeedCard = ({feed}) => {
                     max-width: 70%;
                     padding: 10px 20px;
                     padding-top: 20px;
+                    padding-right: 0;
                     min-height: 20%;
                     border-right: none;
                     border-top-left-radius: 20px;
@@ -161,6 +215,10 @@ const FeedCard = ({feed}) => {
                     -webkit-backdrop-filter: blur(5px);                    
                 }
 
+                .feed-card *{
+                    color: #fff;
+                }
+
                 .feed-card h3{
                     font-size: 16px;
                     font-family: var(--font-regular)
@@ -168,7 +226,7 @@ const FeedCard = ({feed}) => {
 
                 .feed-card p{
                     font-size: 14px;
-                    margin-top: 10px;
+                    margin-top: 5px;
                 }
 
                 .feed-card span{
@@ -192,4 +250,4 @@ const FeedCard = ({feed}) => {
     );
 }
 
-export default FeedCard;
+export default LiveFeedCard;

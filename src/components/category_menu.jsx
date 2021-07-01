@@ -63,14 +63,12 @@ const CategoryMenu = ({categories, onChange}) => {
                 )}
             )}
 
-            <style jsx="true">{`
+            <style jsx>{`
                 .category-menu{
                     padding: 10px 5%;
                     overflow-x: auto;
                     display: flex;
                     align-items: center;
-                    border-top: 1px solid f1f1f1;
-                    border-bottom: 1px solid f1f1f1;
                 }
 
                 .category-menu::-webkit-scrollbar{

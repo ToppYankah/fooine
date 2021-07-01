@@ -37,7 +37,7 @@ const HomeHeader = ({onSearch}) => {
 
     return (
         <div className='home-header'>
-            <h4><pre>Foose Online</pre></h4>
+            <h4><pre>FOINE</pre></h4>
             <div className="search-form">
                 <Icon name="search" fill='#555' />
                 <input onChange={({target: {value}})=> onSearch(value)} type="text" placeholder='Search' aria-placeholder="Search" className="search-input"/>
@@ -45,7 +45,7 @@ const HomeHeader = ({onSearch}) => {
             {renderAuth()}
             <style jsx>{`
                 .home-header{
-                    padding: 10px 5%;
+                    padding: 20px 5%;
                     display: flex;
                     align-items: center;
                 }

@@ -107,6 +107,7 @@ const ProductViewPage = () => {
                     bottom: 0;
                     right: 0;
                     background: #0000005a;
+                    cursor: pointer;
                 }
 
                 .single-product-page .main-page{
@@ -287,6 +288,7 @@ const Comment = ({comment})=>{
             .comment .message{
                 padding: 5px 0;
                 padding-bottom: 15px;
+                padding-left: 26px;
                 font-size: 12px;
                 color: #555;
                 border-bottom: 1px solid #f0f0f0;

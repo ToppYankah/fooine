@@ -1,14 +1,15 @@
 import React from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 
-const EmptyView = ({message, icon}) => {
+const EmptyView = ({message, icon, useIcon = true}) => {
     return (
         <div className="empty-box">
-            <Icon name={icon} size="xlarge" fill="#ddd" />
-            <p>{message}</p>
+            {useIcon ? <Icon name={icon} size="xlarge" fill="#ddd" /> : <></>}
+            <p style={{marginTop: useIcon ? 20 : 0}}>{message}</p>
             <style jsx>{`
                 .empty-box{
                     padding: 0 20%;
+                    width: 100%;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -17,7 +18,6 @@ const EmptyView = ({message, icon}) => {
                 }
 
                 .empty-box p{
-                    margin-top: 20px;
                     font-size: 16px;
                     color: #999;
                 }
