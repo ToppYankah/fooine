@@ -50,14 +50,22 @@ function ProductsProvider({ children }) {
             console.log(err);
         })
 
-        productsRef.get().then(item=>{
-            setProducts(item.docs.map(doc=> doc.data()) || []);
+        // productsRef.get().then(item=>{
+        //     setProducts(item.docs.map(doc=> doc.data()) || []);
+        //     setLoading(false);
+        // }).catch(err=>{
+        //     console.log(err);
+        // })   
+        productsRef.onSnapshot(snapshot=>{
+            setProducts(snapshot.docs.map(doc=> doc.data()) || []);
             setLoading(false);
-        }).catch(err=>{
-            console.log(err);
-        })        
+            snapshot.docChanges(item=>{
+                console.log("products modified", item.data());
+                setProducts(item.docs.map(doc=> doc.data()) || []);
+            });
+        });       
 
-        console.log(products);
+        console.log("products", products);
     }
 
     const getProductById = (id)=>{

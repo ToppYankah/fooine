@@ -171,7 +171,7 @@ const ProductViewPage = () => {
                 }
                 .single-product-page .details{
                     display: flex;
-                    padding: 0 10%;
+                    padding: 0 5%;
                 }
 
                 .single-product-page .details h2{
@@ -234,7 +234,7 @@ const ProductViewPage = () => {
                 }
 
                 .comment-section{
-                    padding: 0 10%;
+                    padding: 0 5%;
                 }
 
                 .comment-input{
@@ -257,7 +257,6 @@ const ProductViewPage = () => {
                     max-height: 300px;
                     overflow: auto;
                     margin-top: 20px;
-                    padding: 0px 20px;
                 }
                 .comments-list::-webkit-scrollbar{
                     display: none;
@@ -288,7 +287,6 @@ const Comment = ({comment})=>{
             .comment .message{
                 padding: 5px 0;
                 padding-bottom: 15px;
-                margin-left: 6.5%;
                 font-size: 12px;
                 color: #555;
                 border-bottom: 1px solid #f0f0f0;
