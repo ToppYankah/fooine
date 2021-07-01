@@ -193,7 +193,7 @@ const CheckoutPage = ({onClose})=>{
     const [email, setEmail] = useState(isAuth ? user.email : "");
     const history = useHistory();
 
-    console.log(process.env.REACT_APP_PUBLIC_PAYSTACK_API_KEY)
+    console.log(process.env.REACT_APP_LIVE_PUBLIC_PAYSTACK_API_KEY)
 
     const initializePayment = usePaystackPayment({
         reference: (new Date()).getTime(),
@@ -340,7 +340,7 @@ const ProductsViewForCheckout = ({checkoutProducts})=>{
     const [hide, setHide] = useState(false);
     
     return <div className="products-view">
-        <button onClick={()=> setHide(!hide)} className="toggler">{hide ? 'See Products' : 'Hide Products'}</button>
+        <div onClick={()=> setHide(!hide)} className="toggler">{hide ? 'See Products' : 'Hide Products'}</div>
         <div className={`items-container ${hide ? "hidden" : ''}`}>
             {checkoutProducts.map(item=> <div className='item'>
                 <img src={item.imageUrl} width={50} height={50} style={{objectFit: "cover"}} alt={item.name} />
