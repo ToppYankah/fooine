@@ -25,7 +25,7 @@ const HomeHeader = ({onSearch}) => {
                 <b>Login</b>
             </Link>
             <Link to='/signup' className='profile-button auth'>
-                <b>Sign up</b>
+                <b><pre>Sign up</pre></b>
             </Link>
         </>}
         <Link to='/cart' className='profile-button'>
@@ -37,13 +37,13 @@ const HomeHeader = ({onSearch}) => {
 
     return (
         <div className='home-header'>
-            <h4>Foose Online</h4>
+            <h4><pre>Foose Online</pre></h4>
             <div className="search-form">
                 <Icon name="search" fill='#555' />
                 <input onChange={({target: {value}})=> onSearch(value)} type="text" placeholder='Search' aria-placeholder="Search" className="search-input"/>
             </div>
             {renderAuth()}
-            <style jsx='true'>{`
+            <style jsx>{`
                 .home-header{
                     padding: 10px 5%;
                     display: flex;
@@ -57,7 +57,7 @@ const HomeHeader = ({onSearch}) => {
                     display: flex;
                     align-items: center;
                     padding: 0 15px;
-                    margin: 0 50px;
+                    margin: 0 5%;
                 }
 
                 .search-form input{
@@ -80,6 +80,21 @@ const HomeHeader = ({onSearch}) => {
 
                 .profile-button:not(:last-child){
                     margin-right: 20px;
+                }
+
+                @media(max-width: 600px){
+                    .home-header{
+                        margin-bottom: 50px;
+                    }
+                    .home-header h4{
+                        margin-right: auto;
+                    }
+                    .home-header .search-form{
+                        position: absolute;
+                        top: 100%;
+                        width: 90%;
+                        left: 0;
+                    }
                 }
             `}</style>
         </div>
