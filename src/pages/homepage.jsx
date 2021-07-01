@@ -8,15 +8,11 @@ import { Route, useHistory } from "react-router-dom";
 import SignupForm from '../components/signup_form';
 import CartCheckoutPopup from '../components/cart-checkout-popup';
 import ProductViewPage from '../components/product_view_page';
-import Loader from '../components/simple_loader';
 import ProfilePopup from '../components/profile_popup';
-import { useCart } from '../providers/cartProvider';
-import { useAuth } from '../providers/authProvider';
-import { useToken } from '../hooks/token';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
-    const { products: _prods, getProducts, categories, fetchProducts, searchProducts} = useProducts();
+    const { products: _prods, getProducts, categories, searchProducts} = useProducts();
     const [categoryFilter, setCategoryFilter] = useState("");
     const history = useHistory();
 
@@ -39,9 +35,6 @@ const HomePage = () => {
             <><HomeHeader onSearch={handleSearch} />
                     <CategoryMenu categories={categories} onChange={(categoryId)=> setCategoryFilter(categoryId)} />
                     <FeedSection products={products} />
-                    <Route path="/preview-product/:id">
-                        <ProductViewPage />
-                    </Route>
                     <Route path="/login">
                         <LoginForm />
                     </Route>
@@ -53,6 +46,9 @@ const HomePage = () => {
                     </Route>
                     <Route path="/profile">
                         <ProfilePopup />
+                    </Route>
+                    <Route path="/preview-product/:id">
+                        <ProductViewPage />
                     </Route>
                 </>
         </div>

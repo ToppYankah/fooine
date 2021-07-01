@@ -19,9 +19,9 @@ function App() {
   const {getCart} = useCart();
 
   useEffect(() => {
-        fetchProducts();
-        getCart(isAuth ? user.id : token);
-    }, [isAuth]);
+      fetchProducts();
+      getCart(isAuth ? user.id : token);
+  }, [isAuth]);
 
   return (
     <div className="App">

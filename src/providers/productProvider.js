@@ -64,6 +64,12 @@ function ProductsProvider({ children }) {
         return products.filter(product=> product.id === id)[0];
     }
 
+    const fetchProductById = async (id)=>{
+        setLoading(true);
+        const prodSnapshot = await productsRef.doc(id).get();
+        return prodSnapshot.data();
+    }
+
     const searchProducts = (searchString)=>{
         if(searchString && searchString !== ""){
             return products.filter(product=>
@@ -192,7 +198,7 @@ function ProductsProvider({ children }) {
     return (
         <ProductsContext.Provider value={{
             products, categories, loading,
-            fetchProducts, getProducts, holdProduct, 
+            fetchProducts, getProducts, holdProduct, fetchProductById, 
             unholdProduct, markProductsAsSold, searchProducts,
             like, addToWishList, share, getProductById, comment
         }}>

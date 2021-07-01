@@ -9,18 +9,21 @@ import Loader from './simple_loader';
 
 const ProductViewPage = () => {
     const params = useParams();
-    const {products, comment, getProductById, loading: productsLoading} = useProducts();
+    const {products, comment, fetchProductById, getProductById} = useProducts();
     const {cart, addToCart, removeFromCart} = useCart();
+    const {isAuth, user} = useAuth();
     const [token] = useToken();
-    const {isAuth, user, loading: AuthLoading} = useAuth();
-    const [held, setHeld] = useState(false);
     const [inCart, setInCart] = useState(false);
     const [commentMsg, setCommentMsg] = useState("");
-    const product = getProductById(params.id);
+    const [product, setProduct] = useState();
 
-    useEffect(() => {
-        setHeld(product.heldBy && product.heldBy !== "")
-        setInCart(cart.includes(product.id));
+    useEffect(async () => {
+        if(products.length > 0){
+            setProduct(getProductById(params.id));
+        }else{
+            setProduct(await fetchProductById(params.id));
+        }
+        setInCart(cart.includes(params.id));
     }, [cart, products]);
 
     const handleComment = (e)=>{
@@ -41,8 +44,9 @@ const ProductViewPage = () => {
 
     return (
         <div className='single-product-page'>
-            {productsLoading || AuthLoading ? <Loader /> : <><div className="close-sheet" onClick={onClosePage}></div>
+            <div className="close-sheet" onClick={onClosePage}></div>
             <div className={`main-page`}>
+                {product ? <>
                 <div className="close-button" onClick={onClosePage}>
                     <Icon name="close" fill="#ffffff" size="medium" />
                 </div>
@@ -82,8 +86,8 @@ const ProductViewPage = () => {
                     <div className="comments-list">
                         {product.comments.map(comment => <Comment  comment={comment}/>)}
                     </div>
-                </div>
-            </div> </>}
+                </div></> : <Loader />}
+            </div>
             <style jsx>{`
                 .single-product-page{
                     position: fixed;
