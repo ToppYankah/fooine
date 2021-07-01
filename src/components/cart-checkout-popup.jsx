@@ -268,10 +268,10 @@ const CheckoutPage = ({onClose})=>{
                     Delivery Setup
                 </div>
                 <div className="choose-delivery">
-                    <button className={`${deliveryId == 0 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(0); setDeliveryFee(0)}}>Pick up</button>
-                    <button className={`${deliveryId == 1 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(1); setDeliveryFee(0)}}>Parcel Office</button>
-                    {/* <button className={`${deliveryId == 2 ? 'selected' : ''}`} onClick={()=> setDeliveryId(2)}>Doors Step</button> */}
-                    <button className={`${deliveryId == 3 ? 'selected' : ''}`} onClick={()=> setDeliveryId(3)}><pre>Discounted shipping</pre></button>
+                    <div className={`${deliveryId == 0 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(0); setDeliveryFee(0)}}>Pick up</div>
+                    <div className={`${deliveryId == 1 ? 'selected' : ''}`} onClick={()=>{ setDeliveryId(1); setDeliveryFee(0)}}>Parcel Office</div>
+                    {/* <div className={`${deliveryId == 2 ? 'selected' : ''}`} onClick={()=> setDeliveryId(2)}>Doors Step</div> */}
+                    <div className={`${deliveryId == 3 ? 'selected' : ''}`} onClick={()=> setDeliveryId(3)}><pre>Discounted shipping</pre></div>
                 </div>
                 {deliveryId == 1 ? 
                 <div className="address-form">
