@@ -89,7 +89,7 @@ const CategoryMenu = ({categories, onChange}) => {
                     cursor: pointer;
                     display: flex;
                     font-size: 14px;
-                    box-shadow: 0 0 10px #eee;
+                    box-shadow: 0 0 10px #ddd;
                 }
 
                 .category-menu .item.select{

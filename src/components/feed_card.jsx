@@ -1,3 +1,4 @@
+import { AiFillHeart, AiFillStar, AiOutlineHeart, AiOutlineShareAlt, AiOutlineStar } from '@meronex/icons/ai';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons';
 import { Link } from 'react-router-dom';
@@ -42,16 +43,16 @@ const LiveFeedCard = ({feed}) => {
         style={{backgroundImage: `url(${feed.imageUrl})`}}
         >
             <div className="actions">
-                <div onClick={()=> like(isAuth ? user.id : token, feed)} className={`like ${liked ? 'active' : ''}`}>
-                    <Icon name={"heart-outline"} fill={'#fff'} size="medium" />
+                <div onClick={()=> like(isAuth ? user.id : token, feed)} className={`like`}>
+                    {liked ? <AiFillHeart color="red" size={20} /> : <AiOutlineHeart color={'#fff'} size={20} />}
                     <div className="count">{feed.likes.length}</div>
                 </div>
-                <div onClick={()=> addToWishList(isAuth ? user.id : token, feed)} className={`wish ${wishlisted ? 'active' : ''}`}>
-                    <Icon name={"star-outline"} fill={'#fff'} size="medium" />
+                <div onClick={()=> addToWishList(isAuth ? user.id : token, feed)} className={`wish`}>
+                    {wishlisted ? <AiFillStar color="orange" size={20} /> : <AiOutlineStar color={'#fff'} size={20} />}
                     <div className="count" style={{background: "#FF9900"}}>{feed.wishlist.length}</div>
                 </div>
                 <div onClick={()=>{}} className="share">
-                    <Icon name="share-outline" fill='#ffffff' size="medium" />
+                    <AiOutlineShareAlt color='#ffffff' size={20} />
                     <div className="count" style={{background: "#ffffff", color: "#555"}}>{feed.shares.length}</div>
                 </div>
             </div>
@@ -145,16 +146,8 @@ const LiveFeedCard = ({feed}) => {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: white;
                     background: #ffffff2a;
                     cursor: pointer;
-                }
-
-                div.like.active{
-                    background: #FF3C00;
-                }
-                div.wish.active{
-                    background: #FF9900;
                 }
 
                 .feed-card .actions div:nth-child(2){

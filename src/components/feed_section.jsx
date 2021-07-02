@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import LiveFeedCard from './feed_card';
 import { Link } from 'react-router-dom';
 
-const LiveFeedSection = ({products}) => {
+const LiveFeedSection = ({products: prods}) => {
+    const products = prods.reverse();
     useEffect(() => {
         const feedsScrollView = document.getElementById('scroll-feed');
         let feedsPos = { top: 0, left: 0, x: 0, y: 0 };
@@ -60,9 +61,6 @@ const LiveFeedSection = ({products}) => {
             <div className="vanishing-point right"></div>
             {/* <QuickAccessFeedSection feeds={products} /> */}
             <style jsx>{`
-                .feed-section{
-                    min-height: 100%;
-                }
                 .feed-section .inner{
                     padding: 20px 5%;
                     display: flex;

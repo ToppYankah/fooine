@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { Link } from 'react-router-dom';
 import { useToken } from '../hooks/token';
@@ -13,6 +13,22 @@ const QuickCartView = () => {
     const {isAuth, user} = useAuth();
     const [token] = useToken();
     const [open, setOpen] = useState(true);
+    const [amount, setAmount] = useState(getCheckoutTally())
+
+    useEffect(() => {
+        setAmount(getCheckoutTally());
+        setOpen(true);
+        setTimeout(()=>setOpen(false), 2000)
+    }, [checkOut]);
+
+    function getCheckoutTally(){
+        let output = 0.00;
+        checkOut.forEach(itemId=>{
+            console.log(itemId, getProductById(itemId))
+            output += parseFloat(getProductById(itemId).price);
+        });
+        return output;
+    }
 
     return (
         <div className={`quick-cart-view ${open ? "show" : ""}`}>
@@ -31,9 +47,10 @@ const QuickCartView = () => {
                     )}
                     {checkOut.length < 1 ? <EmptyView message="Checkout cart is empty" useIcon={false} /> : <></>}
                 </div>
-                <div className="checkout-btn-box">
+                {checkOut.length > 0 ?<div className="checkout-btn-box">
+                    <p><small>GHC</small><big>{parseFloat(amount).toFixed(2)}</big></p>
                     <Link to="/cart/checkout" className="btn">Checkout</Link>
-                </div>
+                </div> : <></>}
             </div>
             <style jsx>{`
                 .quick-cart-view{
@@ -133,6 +150,12 @@ const QuickCartView = () => {
                     color: #fff;
                     border-radius: 10px;
                     font-size: 13px;
+                }
+                .quick-cart-view .checkout-btn-box p{
+                    margin-bottom: 10px;
+                    font-weight: bolder;
+                    text-align: center;
+                    color: var(--dark-color)
                 }
             `}</style>
         </div>

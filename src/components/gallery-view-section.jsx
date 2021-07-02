@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useCart } from '../providers/cartProvider';
-import { useProducts } from '../providers/productProvider';
+import { getStatus, useProducts } from '../providers/productProvider';
 import CategoryMenu from './category_menu';
+import { AiOutlineHeart, AiFillHeart, AiOutlineStar, AiFillStar, AiOutlineShareAlt } from '@meronex/icons/ai';
+import { Link } from 'react-router-dom';
+
 
 const GalleryViewSection = () => {
-    const {products: prods, categories, getProducts } = useProducts();
-    const {cart, checkout} = useCart();
+    const {products: prods, categories, getProducts, like, addToWishList } = useProducts();
+    const {cart, checkout, addToCart, removeFromCart} = useCart();
     const [token] = useToken();
     const {user, isAuth} = useAuth();
     const [products, setProducts] = useState(prods);
@@ -17,17 +20,26 @@ const GalleryViewSection = () => {
         setProducts(getProducts(categoryFilter));
     }, [categoryFilter, prods]);
 
+    const handleAddToCart = (productId)=>{
+        if(cart.includes(productId)){
+           return removeFromCart(isAuth ? user.id : token, productId);
+        }
+
+        addToCart(isAuth ? user.id : token, productId);
+    }
+
     return (
         <div className="gallery-view">
-            <div className="mute-heading">
+            {/* <div className="mute-heading">
                 <hr /><b>All Products</b><hr />
-            </div>
+            </div> */}
             <CategoryMenu categories={categories} onChange={(categoryId)=> setCategoryFilter(categoryId)} />
             <div className="inner">
                 <div className="category-section">
                     <div className="mute-heading">
                         <hr /><b>Filter By</b><hr />
                     </div>
+                    <button className="cat-item active">No Filter</button>
                     <button className="cat-item">Added Today</button>
                     <button className="cat-item">Sold/Old Products</button>
                     <button className="cat-item">On Hold</button>
@@ -37,8 +49,27 @@ const GalleryViewSection = () => {
                     {products.map(product=> <div className="item">
                         <img draggable="false" src={product.imageUrl} alt="product item" />
                         <div className="content">
-
+                            <Link to={`/preview-product/${product.id}`} className="preview-button"></Link>
+                            <div className="details">
+                                <h3>{product.name}</h3>
+                            </div>
+                            {product.status === 2 ? <></> : <div className="add-cart">
+                                <p><small>GHC</small><big>{parseFloat(product.price).toFixed(2)}</big></p>
+                                <button onClick={()=>handleAddToCart(product.id)} className={`btn ${cart.includes(product.id) ? "" : "active"}`}>{cart.includes(product.id) ? "Remove from cart" : "Add to cart"}</button>
+                            </div>}
+                            <div className="actions">
+                                <div onClick={()=> like(isAuth ? user.id : token, product)} className="act">
+                                    {product.likes.includes(isAuth ? user.id : token) ? <AiFillHeart size={20} color="red" /> : <AiOutlineHeart size={20} color="#fff" /> }
+                                </div>
+                                <div onClick={()=> addToWishList(isAuth ? user.id : token, product)} className="act">
+                                    {product.wishlist.includes(isAuth ? user.id : token) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
+                                </div>
+                                <div onClick={()=>{}} className="act">
+                                    <AiOutlineShareAlt size={20} color="#fff"/>
+                                </div>
+                            </div>
                         </div>
+                        <div style={{background: getStatus(product.status).color}} className="status">{getStatus(product.status).value}</div>
                     </div>)}
                 </section>
             </div>
@@ -65,6 +96,11 @@ const GalleryViewSection = () => {
                     display: flex;
                     flex-direction: column;
                 }
+                @media(max-width: 850px){
+                    .gallery-view .inner .category-section{
+                        margin-left: -350px;
+                    }
+                }
 
                 .gallery-view .inner .category-section > button{
                     margin-top: 10px;
@@ -73,18 +109,47 @@ const GalleryViewSection = () => {
                     border:none;
                     text-align: left;
                     cursor: pointer;
-                    background: #fafafa;
+                    transition: all .2s linear;
+                    background: transparent;
+                }
+
+                .gallery-view .inner .category-section > button:hover{
+                    background: #efefef;
+                }
+
+                .gallery-view .inner .category-section > button.active{
+                    background: var(--dark-color);
+                    color: #fff;
                 }
 
                 .gallery-view .inner section{
                     display: grid;
-                    grid-template-columns: repeat(3, 33.33%);
+                    grid-template-columns: repeat(3, 31.5%);
                     grid-gap: 2%;
+                }
+                @media(max-width: 1090px){
+                    .gallery-view .inner section{
+                        grid-template-columns: repeat(2, 48%);
+                        grid-gap: 2%;
+                    }
+                }
+                @media(max-width: 850px){
+                    .gallery-view .inner section{
+                        min-width: 100%;
+                        flex: 1;
+                    }
+                }
+                .gallery-view .inner section::-webkit-scrollbar{
+                    display: none;
                 }
 
                 .gallery-view .inner .item{
                     min-width: 100%;
                     min-height: 300px;
+                }
+                @media(max-width: 1090px){
+                    .gallery-view .inner .item{
+                    }
                 }
 
                 .gallery-view .item img{
@@ -94,20 +159,101 @@ const GalleryViewSection = () => {
                     border-radius: 10px;
                 }
 
-                .gallery-view .inner .item .content{
+                .gallery-view .inner .item .content,
+                .gallery-view .inner .item .preview-button
+                {
                     position: absolute;
                     top: 0;
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background: #0000009a;
                     border-radius: 10px;
                     opacity: 0;
                     transition: opacity .1s linear;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    background: transparent;
+                }
+                .gallery-view .inner .item .preview-button{
+                    background: #0000009a;
+                    pointer-events: none;
+                    opacity: 0;
                 }
                 .gallery-view .inner .item:hover .content{
                     opacity: 1;
                 }
+                .gallery-view .inner .item:hover .preview-button{
+                    opacity: 1;
+                    pointer-events: all;
+                }
+
+                .gallery-view .item .content .details{
+                    padding: 20px 5%;
+                    color: #fff;
+                }
+                .gallery-view .item .content .add-cart{
+                    padding: 20px 5%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    color: #fff;
+                }
+                .gallery-view .item .content .add-cart button{
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    border: none;
+                    background: #fff;
+                    font-size: 12px;
+                    cursor: pointer;
+                }
+                .gallery-view .item .content .add-cart button.active{
+                    background: var(--dark-color);
+                    color: #fff;
+                }
+                .gallery-view .item .status{
+                    position: absolute;
+                    right: 0;
+                    top: 15px;
+                    color: #fff;
+                    font-size: 12px;
+                    padding: 10px 5%;
+                    border-top-left-radius: 10px;
+                    border-bottom-left-radius: 10px;
+                }
+
+                .gallery-view .item .actions{
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    background-color: #0000005a;
+                    backdrop-filter: blur(2px);
+                    -webkit-backdrop-filter: blur(2px);
+                }
+                .gallery-view .item .actions .act{
+                    cursor: pointer;
+                    margin: 0px 10px;
+                    animation: bounce .3s ease-in-out;
+                }
+
+                @keyframes bounce{
+                    0%{
+                        transform: translate(-50%, -50%) scale(0.5);
+                    }
+                    50%{
+                        transform: translate(-50%, -50%) scale(1.5);
+                    }
+                    100%{
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                }
+
             `}</style>
         </div>
     );

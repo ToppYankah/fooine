@@ -157,6 +157,9 @@
   border-radius: 10px;
   cursor: pointer;
   flex: 1;
+  font-size: 12px;
+  text-align: center;
+  background-color: #efefef;
 }
 /* .checkout-page .body .choose-delivery button:first-child {
   border-top-right-radius: 0px;
@@ -166,7 +169,7 @@
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
 } */
-.checkout-page .body .choose-delivery button.selected {
+.checkout-page .body .choose-delivery div.selected {
   background-color: var(--dark-color);
   color: #fff;
 }

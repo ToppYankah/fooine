@@ -23,7 +23,6 @@ function CartProvider({ children }) {
                     setCart(()=> snapshot.data().cart || [])
                     setCheckOut(()=> snapshot.data().cart || [])
                 }
-                console.log(snapshot.data());
             })
         }
     }
@@ -46,7 +45,6 @@ function CartProvider({ children }) {
     }
 
     const removeFromCart = (key, itemId)=>{
-        console.log("removing from cart")
         setLoading(true);
         if(itemId && cart.includes(itemId) && cart.length > 0){
             const newCart = cart.filter(id=> id !== itemId);
@@ -76,12 +74,10 @@ function CartProvider({ children }) {
 
     const clearCheckedOut = (key)=>{
         // remove checkedout cart items
-        console.log("clearing checkout...");
         const newCart = cart.filter(id=> !checkOut.includes(id));
         cartRef.doc(key)
         .update({cart: [...newCart]})
         .then(_=>{
-            console.log("cleared successfully...");
             setCheckOut([]);
             setCart([...newCart]);
         }).catch(error=> {

@@ -193,18 +193,16 @@ const CheckoutPage = ({onClose})=>{
     const [email, setEmail] = useState(isAuth ? user.email : "");
     const history = useHistory();
 
-    console.log(process.env.REACT_APP_LIVE_PUBLIC_PAYSTACK_API_KEY)
-
     const initializePayment = usePaystackPayment({
         reference: (new Date()).getTime(),
         email: email,
         amount: totalPayment * 100,
         currency: 'GHS',
-        publicKey: process.env.REACT_APP_PUBLIC_PAYSTACK_API_KEY,
+        publicKey: process.env.REACT_APP_LIVE_PUBLIC_PAYSTACK_API_KEY,
     });
 
     useEffect(() => {
-        setTotalPayment(getCheckoutTally() + deliveryFee)
+        setTotalPayment(getCheckoutTally() + deliveryFee);
     }, [deliveryFee]);
 
     useEffect(() => {
@@ -362,6 +360,8 @@ const ProductsViewForCheckout = ({checkoutProducts})=>{
                 color: #777;
                 padding: 10px 0;
                 cursor: pointer; 
+                text-align: center;
+                font-size: 13px;
             }
 
             .products-view .items-container{

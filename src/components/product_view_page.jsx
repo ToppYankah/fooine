@@ -51,41 +51,40 @@ const ProductViewPage = () => {
                     <Icon name="close" fill="#ffffff" size="medium" />
                 </div>
                 <div className="img-box" style={{backgroundImage: `url(${product.imageUrl})`}}></div>
-                <div className="mute-heading">
-                    <hr /><b>Details</b><hr />
-                </div>
-                <div className="details">
-                    <div  style={{flex: '1'}}>
-                        <h2 style={{marginBottom: 10}}>{product.name}</h2>
-                        <div style={{marginBottom: 10}}>
-                            <span className="tag" style={{marginRight: 10}}>{product.size} Size</span>
-                            <span className="tag">{getStatus(product.status).value}</span>
+                <div className="content">
+                    <div className="details">
+                        <div  style={{flex: '1'}}>
+                            <h2 style={{marginBottom: 30}}>{product.name}</h2>
+                            <div style={{marginBottom: 10}}>
+                                <span className="tag" style={{marginRight: 10}}>{product.size} Size</span>
+                                <span style={{background: getStatus(product.status).color, color: "#fff"}} className="tag">{getStatus(product.status).value}</span>
+                            </div>
                         </div>
+                        <div>
+                            <p className='price'>GHC <b style={{fontSize: 25}}>{parseFloat(product.price).toFixed(2)}</b></p>
+                        </div>               
                     </div>
-                    <div>
-                        <p className='price'>GHC <b style={{fontSize: 25}}>{parseFloat(product.price).toFixed(2)}</b></p>
-                    </div>               
-                </div>
-                <div className="purchase-actions">
-                    {/* <button onClick={()=> held ? unholdProduct(product.id) : holdProduct(product.id, 1)} id="hold">
-                        <Icon name="pause-circle-outline" size="medium" fill="var(--dark-color)" />
-                        <b>{held ? "Unhold Item" : "Hold Item"}</b>
-                    </button> */}
-                    {product.status !== 2 ? <button onClick={()=> inCart ? removeFromCart(isAuth ? user.id : token, product.id) : addToCart(isAuth ? user.id : token, product.id)} id="add-to-cart">
-                        <Icon name="shopping-cart-outline" size="medium" fill="#fff" />
-                        <b>{inCart ? 'Remove from cart' : 'Add to cart'}</b>
-                    </button> : <></>}
-                </div>
-                <div className="mute-heading">
-                    <hr /><b>Comments</b><hr />
-                </div>
-                <div className="comment-section">
-                    <form onSubmit={handleComment} className="comment-input">
-                        <input type="text" value={commentMsg} onChange={({target: {value}})=> setCommentMsg(value)} placeholder="Leave a comment on this item" />
-                    </form>
-                    <div className="comments-list">
-                        {product.comments.map(comment => <Comment  comment={comment}/>)}
+                    <div className="purchase-actions">
+                        {/* <button onClick={()=> held ? unholdProduct(product.id) : holdProduct(product.id, 1)} id="hold">
+                            <Icon name="pause-circle-outline" size="medium" fill="var(--dark-color)" />
+                            <b>{held ? "Unhold Item" : "Hold Item"}</b>
+                        </button> */}
+                        {product.status !== 2 ? <button onClick={()=> inCart ? removeFromCart(isAuth ? user.id : token, product.id) : addToCart(isAuth ? user.id : token, product.id)} id="add-to-cart">
+                            <Icon name="shopping-cart-outline" size="medium" fill="#fff" />
+                            <b>{inCart ? 'Remove from cart' : 'Add to cart'}</b>
+                        </button> : <></>}
                     </div>
+                    <div className="mute-heading">
+                        <hr /><b>Comments</b><hr />
+                    </div>
+                    <div className="comment-section">
+                    </div>
+                        <form onSubmit={handleComment} className="comment-input">
+                            <input type="text" value={commentMsg} onChange={({target: {value}})=> setCommentMsg(value)} placeholder="Leave a comment on this item" />
+                        </form>
+                        <div className="comments-list">
+                            {product.comments.map(comment => <Comment  comment={comment}/>)}
+                        </div>
                 </div></> : <Loader />}
             </div>
             <style jsx>{`
@@ -98,6 +97,9 @@ const ProductViewPage = () => {
                     backdrop-filter: blur(5px);
                     -webkit-backdrop-filter: blur(5px);  
                     z-index: 100;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .single-product-page .close-sheet{
@@ -112,15 +114,27 @@ const ProductViewPage = () => {
 
                 .single-product-page .main-page{
                     margin: 0 auto;
-                    max-width: 550px;
-                    width: 100%;
+                    width: 60%;
                     background: #fff;
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: stretch;
+                    height: 90%;
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
                     animation: scale-in .15s cubic-bezier(0.04, 1.12, 0.37, 1.15);
-                    overflow: auto;
+                    padding: 10px;
+                    border-radius: 20px;
+                }
+
+                @media(max-width: 1000px){
+                    .single-product-page .main-page{
+                        width: 80%;
+                    }
+                }
+                @media(max-width: 700px){
+                    .single-product-page .main-page{
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 0px;
+                    }
                 }
 
                 .single-product-page .main-page::-webkit-scrollbar{
@@ -146,7 +160,7 @@ const ProductViewPage = () => {
                 
                 .single-product-page .close-button{
                     position: absolute;
-                    top: 5px;
+                    top: 10px;
                     right: 10px;
                     width: 30px;
                     height: 30px;
@@ -163,16 +177,49 @@ const ProductViewPage = () => {
 
                 .single-product-page .img-box{
                     width: 100%;
-                    min-height: 500px;
-                    border-radius: 0px;
+                    max-width: 500px;
+                    height: 100%;
+                    border-radius: 20px;
                     background-color: var(--light-color);
                     background-size: cover;
                     background-position: center;
                     margin-bottom: 20px;
                 }
+
+                @media(max-width: 600px){
+                    .single-product-page .main-page{
+                        border-radius: 0px;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: auto;
+                    }
+
+                    .single-product-page .img-box{
+                        width: 100%;
+                        max-width: 100%;
+                        min-height: 70vh;
+                        border-radius: 20px;
+                        margin-bottom: 0px;
+                    }
+                }
+
+                .single-product-page .content{
+                    flex: 1;
+                    width: 100%;
+                    max-width: 100%;
+                    padding: 10% 5%;
+                    padding-bottom: 0px;
+                    overflow: hidden;
+                }
+                @media(max-width: 600px){
+                    .single-product-page .content{
+                        flex: 1;
+                        padding: 5%;
+                        overflow: initial;
+                    }
+                }
                 .single-product-page .details{
                     display: flex;
-                    padding: 0 5%;
                 }
 
                 .single-product-page .details h2{
@@ -203,7 +250,7 @@ const ProductViewPage = () => {
 
                 .single-product-page .purchase-actions{
                     display: flex;
-                    padding: 15px 10%;
+                    padding: 15px 0;
                     align-items: center;
                 }
 
