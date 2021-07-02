@@ -52,20 +52,6 @@ const LiveFeedCard = ({feed}) => {
         <div className='feed-card' 
         style={{backgroundImage: `url(${feed.imageUrl})`}}
         >
-            {/* <div className="actions">
-                <div onClick={()=> like(isAuth ? user.id : token, feed)} className={`like`}>
-                    {liked ? <AiFillHeart color="red" size={20} /> : <AiOutlineHeart color={'#fff'} size={20} />}
-                    <div className="count">{feed.likes.length}</div>
-                </div>
-                <div onClick={()=> addToWishList(isAuth ? user.id : token, feed)} className={`wish`}>
-                    {wishlisted ? <AiFillStar color="orange" size={20} /> : <AiOutlineStar color={'#fff'} size={20} />}
-                    <div className="count" style={{background: "#FF9900"}}>{feed.wishlist.length}</div>
-                </div>
-                <div onClick={()=>{}} className="share">
-                    <AiOutlineShareAlt color='#ffffff' size={20} />
-                    <div className="count" style={{background: "#ffffff", color: "#555"}}>{feed.shares.length}</div>
-                </div>
-            </div> */}
             <div style={{display: "flex", paddingTop: 20}}>
                 {held && <img src="/images/held-img.png" style={{opacity: 0.9, margin: "0 auto"}} width="50%" />}
             </div>
@@ -78,13 +64,13 @@ const LiveFeedCard = ({feed}) => {
                 </Link>
                 {feed.status !== 2 ? 
                 <div className="add-section">
-                    <div className="add-to-cart">
+                    {held ? <></> :<div className="add-to-cart">
                         <input type="checkbox" checked={cart.includes(feed.id)} name="add-cart" className="add-cart" id={feed.id} onChange={handleAddToCart} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
                         <label for={feed.id}>{cart.includes(feed.id) ? "Remove" : "Add"}</label>
-                    </div>
+                    </div>}
                     {held && !heldByMe ? 
                     <></> : <div className="hold">
                         <input type="checkbox" checked={heldByMe} name="add-cart" className="add-cart" id={`${feed.id}hold`} onChange={handleHoldItem} />

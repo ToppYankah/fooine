@@ -92,7 +92,7 @@ const GalleryViewSection = () => {
                             </div>
                             {product.status === 2 ? <></> : <div className="add-cart">
                                 <p><small>GHC</small><big>{parseFloat(product.price).toFixed(2)}</big></p>
-                                <button onClick={()=>handleAddToCart(product.id)} className={`btn ${cart.includes(product.id) ? "" : "active"}`}>{cart.includes(product.id) ? "Remove from cart" : "Add to cart"}</button>
+                                {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${cart.includes(product.id) ? "" : "active"}`}>{cart.includes(product.id) ? "Remove from cart" : "Add to cart"}</button>}
                             </div>}
                             <div className="actions">
                                 <div onClick={()=> like(isAuth ? user.id : token, product)} className="act">
