@@ -5,6 +5,7 @@ import Icon from 'react-eva-icons/dist/Icon';
 import { useAuth } from '../providers/authProvider';
 import Loader from './simple_loader';
 import { useCart } from '../providers/cartProvider';
+import { AiOutlineLogout, AiOutlineShoppingCart, AiOutlineStar, AiOutlineUser, AiOutlinePaperClip, AiOutlineFileText, AiOutlineInfoCircle } from '@meronex/icons/ai';
 
 const ProfilePopup = () => {
     const {user, isAuth, logout, loading} = useAuth();
@@ -46,22 +47,41 @@ const ProfilePopup = () => {
                     <p>{user.email}</p>
                 </div>
                 <div className="option-list">
+                    <Link className="option" to="/profile/account">
+                        <p>
+                            <AiOutlineUser size={20} color="#555" />
+                            <b>Account</b>
+                        </p>
+                    </Link>
                     <Link className="option" to="/cart">
                         <p>
-                            <Icon name="shopping-cart-outline" fill="#555" size="medium" />
+                            <AiOutlineShoppingCart size={20} color="#555" />
                             <b>My Cart</b>
                             <span className="tag">{cart.length}</span>
                         </p>
                     </Link>
                     <Link className="option" to="/profile/option">
                         <p>
-                            <Icon name="star-outline" fill="#555" size="medium" />
+                            <AiOutlineStar size={20} color="#555" />
                             <b>My Wish List</b>
                             <span className="tag">0</span>
                         </p>
                     </Link>
+                    <Link className="option" to="/profile/option">
+                        <p>
+                            <AiOutlineFileText size={20} color="#555" />
+                            <b>My Orders</b>
+                            <span className="tag">0</span>
+                        </p>
+                    </Link>
+                    <Link className="option" to="/profile/option">
+                        <p>
+                            <AiOutlineInfoCircle size={20} color="#555" />
+                            <b>Help Center</b>
+                        </p>
+                    </Link>
                     <Link className="option" onClick={handleLogout}>
-                        <p><Icon name="log-out-outline" fill="#555" size="medium" /><b>Logout</b></p>
+                        <p><AiOutlineLogout size={20} color="#555" /><b>Logout</b></p>
                     </Link>
                 </div>
                 {loading ? <Loader expand={true} /> : <></>}

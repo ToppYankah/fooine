@@ -92,13 +92,21 @@
   flex: 1;
   overflow: auto;
 }
+.content .option-list::-webkit-scrollbar {
+  width: 5px;
+  background-color: transparent;
+}
+.content .option-list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #ddd;
+}
 
 .content .option p {
   padding: 20px var(--space-x);
   border-bottom: 1px solid #f9f9f9;
   font-size: 14px;
   transition: font-size 0.2s;
-  color: #777;
+  color: #555;
   display: flex;
   align-items: center;
 }

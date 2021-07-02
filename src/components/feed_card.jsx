@@ -74,7 +74,7 @@ const LiveFeedCard = ({feed}) => {
             <style jsx>{`
                 .feed-card{
                     min-width: 300px;
-                    min-height: 400px;
+                    min-height: 300px;
                     border-radius: 20px;
                     background-color: #efefef;
                     border: 1px solid #efefef;
@@ -198,7 +198,6 @@ const LiveFeedCard = ({feed}) => {
                     border-right: none;
                     border-top-left-radius: 20px;
                     border-bottom-left-radius: 20px;
-                    cursor: pointer;
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;

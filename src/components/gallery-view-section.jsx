@@ -15,10 +15,42 @@ const GalleryViewSection = () => {
     const {user, isAuth} = useAuth();
     const [products, setProducts] = useState(prods);
     const [categoryFilter, setCategoryFilter] = useState("");
+    const [randomize, setRandomize] = useState(true);
+    const [prevShuffle, setPrevShuffle] = useState([]);
 
     useEffect(() => {
-        setProducts(getProducts(categoryFilter));
-    }, [categoryFilter, prods]);
+        const shuffleResult = shuffle(getProducts(categoryFilter));
+        setPrevShuffle( shuffleResult);
+        setProducts(shuffleResult);
+    }, [categoryFilter]);
+
+    useEffect(() => {
+        console.log(prevShuffle);
+        setProducts(prevShuffle.map(item=>{ 
+            let output;
+            const currentProducts = getProducts(categoryFilter);
+            currentProducts.forEach(product=>{
+                if(product.id === item.id){
+                    output = product;
+                }
+            });
+            return output;
+        }));
+    }, [prods]);
+
+    const shuffle = (array)=>{
+        var currentIndex = array.length,  randomIndex;
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
 
     const handleAddToCart = (productId)=>{
         if(cart.includes(productId)){

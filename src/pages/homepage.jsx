@@ -41,6 +41,7 @@ const HomePage = () => {
                     <LiveFeedSection products={products} />
                     <GalleryViewSection />
                 </div>
+                <QuickCartView />
                 <Route path="/login">
                     <LoginForm />
                 </Route>
@@ -56,7 +57,6 @@ const HomePage = () => {
                 <Route path="/preview-product/:id">
                     <ProductViewPage />
                 </Route>
-                <QuickCartView />
             </>
         </div>
     );
