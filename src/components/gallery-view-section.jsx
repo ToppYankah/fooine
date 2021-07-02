@@ -103,7 +103,7 @@ const GalleryViewSection = () => {
                                     <div className="tag">{product.wishlist.length}</div>
                                     {product.wishlist.includes(isAuth ? user.id : token) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
                                 </div>
-                                {held && !heldByMe && product.status === 2 ? 
+                                {(held && !heldByMe) || product.status === 2 ? 
                                 <></> : 
                                 <div onClick={()=> { heldByMe ? 
                                     unholdProduct(isAuth ? user.id : token, product) : 

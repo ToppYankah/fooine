@@ -62,6 +62,7 @@ const QuickCartView = () => {
                     padding: 10px 0;
                     border-top: 1px solid #eee;
                     transition: all .1s linear;
+                    z-index: 10;
                 }
 
                 .quick-cart-view .toggler{
@@ -71,11 +72,13 @@ const QuickCartView = () => {
                     transform: translateX(-50%);
                     padding: 10px 20px;
                     font-size: 12px;
-                    background: #eee;
+                    background: #222;
                     border-top-right-radius: 10px;
                     border-top-left-radius: 10px;
                     cursor: pointer;
                     font-weight: bold;
+                    color: #fff;
+                    letter-spacing: 1px;
                 }
 
                 .quick-cart-view.show{
