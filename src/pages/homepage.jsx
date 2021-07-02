@@ -33,12 +33,14 @@ const HomePage = () => {
         document.body.style.overflow = "auto";     
     });
 
+    const reversedProducts = ()=> products.reverse().map(item=> item);
+
     return (
         <div id='homepage'>
             <>
                 <HomeHeader onSearch={handleSearch} />
                 <div className="page-body">
-                    <LiveFeedSection products={products} />
+                    <LiveFeedSection products={reversedProducts()} />
                     <GalleryViewSection />
                 </div>
                 <QuickCartView />

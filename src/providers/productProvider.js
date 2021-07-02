@@ -16,7 +16,7 @@ export const getStatus = (status)=>{
     let output;
     switch (status) {
         case 0:
-            output = {value: "In Stock", color: "orange"}
+            output = {value: "Available", color: "orange"}
             break;
         case 1:
             output = {value: "On Hold", color: "grey"}
@@ -95,25 +95,37 @@ function ProductsProvider({ children }) {
         return products.filter(product=> product.category === category);
     }
 
-    const holdProduct = (productId, userId) => {
-        if(productId !== null || productId !== ""){
-            const newProducts = products;
-            const foundProduct = newProducts.filter(product=> product.id === productId)[0];
-            const index = newProducts.indexOf(foundProduct);
-            foundProduct.heldBy = userId;
-            newProducts[index] = foundProduct;
-            setProducts(newProducts.map(item=> item));
+    const holdProduct = (userId, product) => {
+        if(product && userId){
+            let update = {};
+            update = {heldBy: userId, status: 1}
+            productsRef.doc(product.id).update(update)
+            .then(_=>{
+                const newProducts = products;
+                const index = newProducts.indexOf(product);
+                product = {...product, ...update};
+                newProducts[index] = product;
+                setProducts(newProducts.map(item=> item));
+            }).catch(error=>{
+                console.log(error);
+            })
         }
     }
 
-     const unholdProduct = (productId) => {
-        if(productId !== null || productId !== ""){
-            const newProducts = products;
-            const foundProduct = newProducts.filter(product=> product.id === productId)[0];
-            const index = newProducts.indexOf(foundProduct);
-            foundProduct.heldBy = "";
-            newProducts[index] = foundProduct;
-            setProducts(newProducts.map(item=> item));
+     const unholdProduct = (userId, product) => {
+        if(userId && product){
+            let update = {};
+            update = {heldBy: "", status: 0}
+            productsRef.doc(product.id).update(update)
+            .then(_=>{
+                const newProducts = products;
+                const index = newProducts.indexOf(product);
+                product = {...product, ...update};
+                newProducts[index] = product;
+                setProducts(newProducts.map(item=> item));
+            }).catch(error=>{
+                console.log(error);
+            })
         }
     }
 

@@ -11,16 +11,19 @@ import { useProducts, getStatus } from '../providers/productProvider';
 const LiveFeedCard = ({feed}) => {
     const {user, isAuth} = useAuth();
     const [token] = useToken();
-    const {products, like, addToWishList, share} = useProducts();
+    const {products, like, addToWishList, share, holdProduct, unholdProduct} = useProducts();
     const {cart, addToCart, removeFromCart} = useCart();
-    const [liked, setLiked] = useState(false);
-    const [wishlisted, setWishlisted] = useState(false);
     const productId = feed.id;
-    console.log(productId);
+    const [heldByMe, setHeldByMe] = useState(false);
+    const [held, setHeld] = useState(false);
+    // const [liked, setLiked] = useState(false);
+    // const [wishlisted, setWishlisted] = useState(false);
 
     useEffect(() => {
-        setLiked(feed.likes.includes(isAuth ? user.id : token))
-        setWishlisted(feed.wishlist.includes(isAuth ? user.id : token))
+        setHeldByMe(feed.heldBy === (isAuth ? user.id : token));
+        setHeld(feed.heldBy !== "");
+        // setLiked(feed.likes.includes(isAuth ? user.id : token))
+        // setWishlisted(feed.wishlist.includes(isAuth ? user.id : token))
     }, [products]);
 
     const onViewItem = ()=>{
@@ -30,7 +33,6 @@ const LiveFeedCard = ({feed}) => {
     }
 
     const handleAddToCart = ()=>{
-        console.log(productId);
         if(cart.includes(feed.id)){
             removeFromCart(isAuth ? user.id : token, productId);
         }else{
@@ -38,11 +40,19 @@ const LiveFeedCard = ({feed}) => {
         }
     }
 
+    const handleHoldItem = ()=>{
+        if(feed.heldBy !== ""){
+            unholdProduct(isAuth ? user.id : token, feed);
+        }else{
+            holdProduct(isAuth ? user.id : token, feed);
+        }
+    }
+
     return (
         <div className='feed-card' 
         style={{backgroundImage: `url(${feed.imageUrl})`}}
         >
-            <div className="actions">
+            {/* <div className="actions">
                 <div onClick={()=> like(isAuth ? user.id : token, feed)} className={`like`}>
                     {liked ? <AiFillHeart color="red" size={20} /> : <AiOutlineHeart color={'#fff'} size={20} />}
                     <div className="count">{feed.likes.length}</div>
@@ -55,6 +65,9 @@ const LiveFeedCard = ({feed}) => {
                     <AiOutlineShareAlt color='#ffffff' size={20} />
                     <div className="count" style={{background: "#ffffff", color: "#555"}}>{feed.shares.length}</div>
                 </div>
+            </div> */}
+            <div style={{display: "flex", paddingTop: 20}}>
+                {held && <img src="/images/held-img.png" style={{opacity: 0.9, margin: "0 auto"}} width="50%" />}
             </div>
             <div className="details" onClick={onViewItem}>
                 <div style={{background: getStatus(feed.status).color}} className="status">{getStatus(feed.status).value}</div>
@@ -63,13 +76,25 @@ const LiveFeedCard = ({feed}) => {
                     <p>{feed.size} Size</p>
                     <p><small>GHC</small><span>{parseFloat(feed.price).toFixed(2)}</span></p>
                 </Link>
-                {feed.status !== 2 ? <div className="add-section">
-                    <input type="checkbox" checked={cart.includes(feed.id)} name="add-cart" className="add-cart" id={feed.id} onChange={handleAddToCart} />
-                    <div className="check-box">
-                        <Icon name="checkmark-outline" fill="#fff" size="small"/>
+                {feed.status !== 2 ? 
+                <div className="add-section">
+                    <div className="add-to-cart">
+                        <input type="checkbox" checked={cart.includes(feed.id)} name="add-cart" className="add-cart" id={feed.id} onChange={handleAddToCart} />
+                        <div className="check-box">
+                            <Icon name="checkmark-outline" fill="#fff" size="small"/>
+                        </div>
+                        <label for={feed.id}>{cart.includes(feed.id) ? "Remove" : "Add"}</label>
                     </div>
-                    <label for={feed.id}>{cart.includes(feed.id) ? "Remove from cart" : "Add to cart"}</label>
-                </div> : <></>}
+                    {held && !heldByMe ? 
+                    <></> : <div className="hold">
+                        <input type="checkbox" checked={heldByMe} name="add-cart" className="add-cart" id={`${feed.id}hold`} onChange={handleHoldItem} />
+                        <div className="check-box">
+                            <Icon name="checkmark-outline" fill="#fff" size="small"/>
+                        </div>
+                        <label for={`${feed.id}hold`}>{heldByMe ? "Drop" : "Hold"}</label>
+                    </div>}
+                </div> : 
+                <></>}
             </div>
             <style jsx>{`
                 .feed-card{
@@ -85,9 +110,14 @@ const LiveFeedCard = ({feed}) => {
                 .feed-card .add-section{
                     display: flex;
                     align-items: center;
+                    justify-content: space-between;
                     margin-top: 10px;
                     border-top: 1px solid #ffffff1a;
                     padding-top: 10px;
+                    padding-right: 20px;
+                }
+                .feed-card .add-section > div{
+                    display: flex;
                 }
                 .feed-card .add-cart{display: none}
                 .feed-card .add-cart:checked + .check-box{
@@ -101,7 +131,7 @@ const LiveFeedCard = ({feed}) => {
                     height: 15px;
                     border-radius: 50%;
                     border: 2px solid var(--dark-color);
-                    margin-right: 10px;
+                    margin-right: 5px;
                     display: flex;
                     align-items: center;
                     justify-content: center;

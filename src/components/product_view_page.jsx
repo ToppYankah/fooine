@@ -117,6 +117,7 @@ const ProductViewPage = () => {
                     width: 60%;
                     background: #fff;
                     height: 90%;
+                    max-height: 600px;
                     display: grid;
                     grid-template-columns: repeat(2, 1fr);
                     animation: scale-in .15s cubic-bezier(0.04, 1.12, 0.37, 1.15);

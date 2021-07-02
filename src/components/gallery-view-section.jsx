@@ -5,11 +5,12 @@ import { useCart } from '../providers/cartProvider';
 import { getStatus, useProducts } from '../providers/productProvider';
 import CategoryMenu from './category_menu';
 import { AiOutlineHeart, AiFillHeart, AiOutlineStar, AiFillStar, AiOutlineShareAlt } from '@meronex/icons/ai';
+import { BsStopwatchFill, BsStopwatch } from '@meronex/icons/bs';
 import { Link } from 'react-router-dom';
 
 
 const GalleryViewSection = () => {
-    const {products: prods, categories, getProducts, like, addToWishList } = useProducts();
+    const {products: prods, categories, getProducts, like, addToWishList, holdProduct, unholdProduct } = useProducts();
     const {cart, checkout, addToCart, removeFromCart} = useCart();
     const [token] = useToken();
     const {user, isAuth} = useAuth();
@@ -78,7 +79,11 @@ const GalleryViewSection = () => {
                     <button className="cat-item">Recently Added</button>
                 </div>
                 <section className="product-section">
-                    {products.map(product=> <div className="item">
+                    {products.map(product=> {
+                        const heldByMe = product.heldBy === (isAuth ? user.id : token);
+                        const held = product.heldBy !== "";
+                    return <div className="item">
+                        {held && <img className="held-img" src="/images/held-img.png"/>}
                         <img draggable="false" src={product.imageUrl} alt="product item" />
                         <div className="content">
                             <Link to={`/preview-product/${product.id}`} className="preview-button"></Link>
@@ -91,18 +96,27 @@ const GalleryViewSection = () => {
                             </div>}
                             <div className="actions">
                                 <div onClick={()=> like(isAuth ? user.id : token, product)} className="act">
+                                    <div className="tag">{product.likes.length}</div>
                                     {product.likes.includes(isAuth ? user.id : token) ? <AiFillHeart size={20} color="red" /> : <AiOutlineHeart size={20} color="#fff" /> }
                                 </div>
                                 <div onClick={()=> addToWishList(isAuth ? user.id : token, product)} className="act">
+                                    <div className="tag">{product.wishlist.length}</div>
                                     {product.wishlist.includes(isAuth ? user.id : token) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
                                 </div>
-                                <div onClick={()=>{}} className="act">
-                                    <AiOutlineShareAlt size={20} color="#fff"/>
-                                </div>
+                                {held && !heldByMe && product.status === 2 ? 
+                                <></> : 
+                                <div onClick={()=> { heldByMe ? 
+                                    unholdProduct(isAuth ? user.id : token, product) : 
+                                    holdProduct(isAuth ? user.id : token, product)}} 
+                                    className="act"
+                                >
+                                    <div className="tag">{held ? "Unhold" : "Hold"}</div>
+                                    {held ? <BsStopwatchFill size={20} color="#fff" /> : <BsStopwatch size={20} color="#fff" />}
+                                </div>}
                             </div>
                         </div>
                         <div style={{background: getStatus(product.status).color}} className="status">{getStatus(product.status).value}</div>
-                    </div>)}
+                    </div>})}
                 </section>
             </div>
             <style jsx>{`
@@ -191,6 +205,20 @@ const GalleryViewSection = () => {
                     border-radius: 10px;
                 }
 
+                .gallery-view .item .held-img{
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 1;
+                    width: 50%;
+                    height: initial;
+                }
+
+                .gallery-view .inner .item .content{
+                    z-index: 2;
+                }
+
                 .gallery-view .inner .item .content,
                 .gallery-view .inner .item .preview-button
                 {
@@ -272,6 +300,35 @@ const GalleryViewSection = () => {
                     cursor: pointer;
                     margin: 0px 10px;
                     animation: bounce .3s ease-in-out;
+                }
+
+                .gallery-view .item .actions .act .tag{
+                    position: absolute;
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: 10px;
+                    color: #555;
+                    background: #fff;
+                    padding: 8px 15px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: all .1s linear;
+                }
+                .gallery-view .item .actions .act .tag::before{
+                    content: "";
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    transform: rotate(45deg) translateX(-50%);
+                    background: #fff;
+                }
+                
+                .gallery-view .item .actions .act:hover .tag{
+                    opacity: 1;
+                    bottom: 150%;
                 }
 
                 @keyframes bounce{

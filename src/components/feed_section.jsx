@@ -3,10 +3,7 @@ import LiveFeedCard from './feed_card';
 import { Link } from 'react-router-dom';
 
 const LiveFeedSection = ({products}) => {
-    products.reverse();
-    useEffect(() => {
-        products.reverse()
-    }, [products]);
+    console.log(products);
     useEffect(() => {
         const feedsScrollView = document.getElementById('scroll-feed');
         let feedsPos = { top: 0, left: 0, x: 0, y: 0 };
@@ -50,7 +47,6 @@ const LiveFeedSection = ({products}) => {
     return (
         <div className='feed-section'>
             <div className="live-notice">
-                <hr />
                 <div className="inner">
                     <div className="indicator"></div>
                     <p>Live Feed</p>
@@ -72,7 +68,7 @@ const LiveFeedSection = ({products}) => {
                 }
 
                 .feed-section .live-notice{
-                    padding: 10px 0;
+                    padding: 10px 5%;
                     display: flex;
                     align-items: center;
                     padding-bottom: 0;
