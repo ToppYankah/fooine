@@ -20,12 +20,6 @@ const GalleryViewSection = () => {
     const [prevShuffle, setPrevShuffle] = useState([]);
 
     useEffect(() => {
-        const shuffleResult = shuffle(getProducts(categoryFilter));
-        setPrevShuffle( shuffleResult);
-        setProducts(shuffleResult.map(item=> item));
-    }, [categoryFilter]);
-
-    useEffect(() => {
         setProducts(prevShuffle.map(item=>{ 
             let output;
             const currentProducts = getProducts(categoryFilter);
@@ -37,6 +31,12 @@ const GalleryViewSection = () => {
             return output;
         }));
     }, [_products]);
+
+    useEffect(() => {
+        const shuffleResult = shuffle(getProducts(categoryFilter));
+        setPrevShuffle( shuffleResult);
+        setProducts(shuffleResult.map(item=> item));
+    }, [categoryFilter]);
 
     const shuffle = (array)=>{
         var currentIndex = array.length,  randomIndex;

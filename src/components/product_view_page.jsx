@@ -66,10 +66,10 @@ const ProductViewPage = () => {
                         </div>               
                     </div>
                     <div className="purchase-actions">
-                        <button onClick={()=> true ? unholdProduct(isAuth ? user.id : token, product) : holdProduct(isAuth ? user.id : token, product)} id="hold">
+                        {product.heldBy !== "" && !(product.heldBy === (isAuth ? user.id : token)) ? <></> : <button onClick={()=> product.heldBy !== "" ? unholdProduct(isAuth ? user.id : token, product) : holdProduct(isAuth ? user.id : token, product)} id="hold">
                             <FaStopwatch size={18} color="#fff" />
-                            <span>{true ? "Unhold Item" : "Hold Item"}</span>
-                        </button>
+                            <span>{product.heldBy !== "" ? "Unhold Item" : "Hold Item"}</span>
+                        </button>}
                         {product.status !== 2 ? <button onClick={()=> inCart ? removeFromCart(isAuth ? user.id : token, product.id) : addToCart(isAuth ? user.id : token, product.id)} id="add-to-cart">
                             {inCart ? <FaEyeSlash size={20} color="#fff" /> : <FaEye size={20} color="#fff" />}
                             <span>{inCart ? 'Unwatch Item' : 'Watch Item'}</span>
@@ -304,6 +304,9 @@ const ProductViewPage = () => {
                     background: transparent;
                     outline: none;
                 }
+                .comment-input input::-webkit-input-placeholder{
+                    font-size: 12px;
+                }
 
                 .comments-list{
                     max-height: 300px;
@@ -335,12 +338,12 @@ const Comment = ({comment})=>{
             .comment .user-name{
                 display: flex;
                 align-items: center;
+                font-size: 10px;
             }
             .comment .message{
-                padding: 5px 0;
-                padding-bottom: 15px;
+                padding: 0px 0 15px 0;
                 padding-left: 26px;
-                font-size: 12px;
+                font-size: 11px;
                 color: #555;
                 border-bottom: 1px solid #f0f0f0;
                 font-weight: 300;

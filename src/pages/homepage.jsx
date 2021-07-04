@@ -46,7 +46,6 @@ const HomePage = () => {
                     <GalleryViewSection />
                 </div>
                 <QuickCartView />
-                <ErrorPopup />
                 <DesktopNotifications />
                 <Route path="/login">
                     <LoginForm />
@@ -63,6 +62,7 @@ const HomePage = () => {
                 <Route path="/preview-product/:id">
                     <ProductViewPage />
                 </Route>
+                <ErrorPopup />
             </>
         </div>
     );

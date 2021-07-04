@@ -91,7 +91,7 @@ function ProductsProvider({ children }) {
 
     const holdProduct = (userId, product) => {
         if(product && userId){
-            if(product.heldBy !== ""){
+            if(product.heldBy === ""){
                 let update = {};
                 update = {heldBy: userId, status: 1}
                 productsRef.doc(product.id).update(update)
