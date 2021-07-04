@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import CategoryMenu from '../components/category_menu';
 import LiveFeedSection from '../components/feed_section';
 import HomeHeader from '../components/home_header';
 import LoginForm from '../components/login_form';
@@ -9,7 +8,7 @@ import SignupForm from '../components/signup_form';
 import CheckoutPopup from '../components/cart-checkout-popup';
 import ProductViewPage from '../components/product_view_page';
 import ProfilePopup from '../components/profile_popup';
-import QuickCartView from '../components/quick_cart_view';
+import QuickWatchlistView from '../components/quick_watchlist_view';
 import GalleryViewSection from '../components/gallery-view-section';
 import '../css/home.css';
 import DesktopNotifications from '../components/notifications';
@@ -45,7 +44,7 @@ const HomePage = () => {
                     <LiveFeedSection products={reversedProducts()} />
                     <GalleryViewSection />
                 </div>
-                <QuickCartView />
+                <QuickWatchlistView />
                 <DesktopNotifications />
                 <Route path="/login">
                     <LoginForm />
