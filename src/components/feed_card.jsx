@@ -6,24 +6,19 @@ import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts, getStatus } from '../providers/productProvider';
-// import Loader from './simple_loader';
 
 const LiveFeedCard = ({feed}) => {
     const {user, isAuth} = useAuth();
     const [token] = useToken();
-    const {products, like, addToWishList, share, holdProduct, unholdProduct} = useProducts();
-    const {watchlist, addToWatchlist, removeFromWatchlist} = useWatchlist();
+    const {products, like, share, holdProduct, unholdProduct} = useProducts();
+    const {watchlist, isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const productId = feed.id;
     const [heldByMe, setHeldByMe] = useState(false);
     const [held, setHeld] = useState(false);
-    // const [liked, setLiked] = useState(false);
-    // const [wishlisted, setWishlisted] = useState(false);
 
     useEffect(() => {
         setHeldByMe(feed.heldBy === (isAuth ? user.id : token));
         setHeld(feed.heldBy !== "");
-        // setLiked(feed.likes.includes(isAuth ? user.id : token))
-        // setWishlisted(feed.wishlist.includes(isAuth ? user.id : token))
     }, [products]);
 
     const onViewItem = ()=>{
@@ -32,9 +27,9 @@ const LiveFeedCard = ({feed}) => {
         // onClick();
     }
 
-    const handleAddToCart = ()=>{
-        if(watchlist.includes(feed.id)){
-            removeFromWatchlist(isAuth ? user.id : token, productId);
+    const handleAddToWatchlist = ()=>{
+        if(isWatching(feed.id)){
+            removeFromWatchlist(productId);
         }else{
             addToWatchlist(isAuth ? user.id : token, productId);
         }
@@ -65,11 +60,11 @@ const LiveFeedCard = ({feed}) => {
                 {feed.status !== 2 ? 
                 <div className="add-section">
                     {held ? <></> :<label htmlFor={feed.id} className="add-to-watchlist">
-                        <input type="checkbox" checked={watchlist.includes(feed.id)} name="add-watchlist" className="add-watchlist" id={feed.id} onChange={handleAddToCart} />
+                        <input type="checkbox" checked={isWatching(feed.id)} name="add-watchlist" className="add-watchlist" id={feed.id} onChange={handleAddToWatchlist} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
-                        <span>{watchlist.includes(feed.id) ? "Unwatch" : "Watch"}</span>
+                        <span>{isWatching(feed.id) ? "Unwatch" : "Watch"}</span>
                     </label>}
                     {held && !heldByMe ? 
                     <></> : <label htmlFor={`${feed.id}hold`} className="hold">
@@ -212,8 +207,7 @@ const LiveFeedCard = ({feed}) => {
                     padding-right: 0;
                     min-height: 20%;
                     border-right: none;
-                    border-top-left-radius: 20px;
-                    border-bottom-left-radius: 20px;
+                    border-radius: 20px 0 20px 0;
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;

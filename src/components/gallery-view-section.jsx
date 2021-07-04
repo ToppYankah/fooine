@@ -12,7 +12,7 @@ import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
 
 const GalleryViewSection = () => {
     const {products: _products, categories, getProducts, like, addToWishList, holdProduct, unholdProduct } = useProducts();
-    const {watchlist, addToWatchlist, removeFromWatchlist} = useWatchlist();
+    const {watchlist, isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const [token] = useToken();
     const {user, isAuth} = useAuth();
     const [products, setProducts] = useState(_products.map(item=> item));
@@ -53,10 +53,9 @@ const GalleryViewSection = () => {
     }
 
     const handleAddToCart = (productId)=>{
-        if(watchlist.includes(productId)){
-           return removeFromWatchlist(isAuth ? user.id : token, productId);
+        if(isWatching(productId)){
+           return removeFromWatchlist(productId);
         }
-
         addToWatchlist(isAuth ? user.id : token, productId);
     }
 
@@ -92,7 +91,7 @@ const GalleryViewSection = () => {
                                 </div>
                                 {product.status === 2 ? <></> : <div className="add-watchlist">
                                     <p><small>GHC</small><big>{parseFloat(product.price).toFixed(2)}</big></p>
-                                    {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${watchlist.includes(product.id) ? "" : "active"}`}>{watchlist.includes(product.id) ? 
+                                    {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${isWatching(product.id) ? "" : "active"}`}>{isWatching(product.id) ? 
                                     (<><FaEyeSlash style={{marginRight: 5}} size={18} color="#222" /><span>Unwatch</span></>) : 
                                     (<><FaEye style={{marginRight: 5}} size={18} color="#fff" /><span>Watch</span></>)}</button>}
                                 </div>}

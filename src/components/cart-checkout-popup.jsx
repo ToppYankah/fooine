@@ -14,7 +14,7 @@ const regions = [
     "Ahafo", "Ashanti", "Bono", "Bono East", "Central", "Eastern", "Greater Accra", "North East", "Northern", "Oti", "Savannah", "Upper East", "Upper West", "Volta", "Western", "Western North"
 ];
 
-const CartCheckoutPopup = () => {
+const CheckoutPopup = () => {
     const history = useHistory();
 
     const handleClose = ()=>{
@@ -67,7 +67,7 @@ const WatchlistPage = ({onClose})=>{
         <div className="body">
             {watchlist.length < 1 ? 
             <EmptyView message="Your watchlist is Empty" icon={<FaEyeSlash size={80} color="#eee" />}/> : 
-            watchlist.map((itemId, id) => <CartItem key={id} item={getProductById(itemId)} />
+            watchlist.map(({productId}, id) => <CartItem key={id} item={getProductById(productId)} />
             )}
         </div>
         {watchlist.length > 0 && checkOut.length > 0 ? <div className="footer">
@@ -78,9 +78,7 @@ const WatchlistPage = ({onClose})=>{
 }
 
 const CartItem = ({item})=>{
-    const {removeFromCheckout, addToCheckout, removeFromCart, checkOut} = useWatchlist();
-    const {user, isAuth,} = useAuth();
-    const [token] = useToken();
+    const {removeFromCheckout, addToCheckout, removeFromWatchlist, checkOut} = useWatchlist();
 
     return (
         <div className="item">
@@ -97,7 +95,7 @@ const CartItem = ({item})=>{
                 </Link >
                 <div className="price">
                     <p><small>GHC</small><span>{parseFloat(item.price).toFixed(2)}</span></p>
-                    <span onClick={()=>removeFromCart(isAuth ? user.id : token, item.id)} style={{color: "#ccc", fontSize: 12}}>- Remove -</span>
+                    <span onClick={()=>removeFromWatchlist(item.id)} style={{color: "#ccc", fontSize: 12}}>- Remove -</span>
                 </div>
             </div>
             <style jsx>{`
@@ -403,4 +401,4 @@ const ProductsViewForCheckout = ({checkoutProducts})=>{
 
 
 
-export default CartCheckoutPopup;
+export default CheckoutPopup;

@@ -1,5 +1,7 @@
 import React, { useState, useContext } from 'react';
+import { v4 } from 'uuid';
 import firebase from '../firebase';
+import { useError } from './errorProvider';
 
 const WatchlistContext = React.createContext();
 
@@ -11,17 +13,26 @@ function WatchlistProvider({ children }) {
     const [watchlist, setWatchlist] = useState([]);
     const [checkOut, setCheckOut] = useState([]);
     const [loading, setLoading] = useState(false);
+    const {createError} = useError();
 
-    const cartRef = firebase.firestore().collection('carts');
+    const watchlistRef = firebase.firestore().collection('watchlist');
+
+    const isWatching = (prodId)=>{
+        let output = false;
+        watchlist.forEach(item=> {
+            if(item.productId === prodId){
+                output = true;
+            }
+        });
+        return output;
+    }
 
     const getWatchlist = (key)=>{
         setLoading(true);
         if(key){
-            cartRef.doc(key).onSnapshot(snapshot=>{
-                if(snapshot.data()){
-                    setWatchlist(()=> snapshot.data().watchlist || [])
-                    setCheckOut(()=> snapshot.data().watchlist || [])
-                }
+            watchlistRef.where("userId", "==", key).onSnapshot(snapshot=>{
+                setWatchlist(snapshot.docs.map(doc=> doc.data()) || [])
+                setCheckOut(snapshot.docs.map(doc=> doc.data().productId) || [])
             })
         }
     }
@@ -29,33 +40,34 @@ function WatchlistProvider({ children }) {
     const addToWatchlist = (key, itemId)=>{
         setLoading(true);
         if(itemId != null && !watchlist.includes(itemId)){
-            const newCart = [...watchlist, itemId];
-            cartRef.doc(key).set({watchlist: newCart})
+            const docId = v4();
+            const newWatch = {id: docId, userId: key, productId: itemId};
+            watchlistRef.doc(docId).set(newWatch)
             .then(_=>{
-                setWatchlist(newCart.map(item => item));
-                setCheckOut([...checkOut, itemId])
+                // setWatchlist([...watchlist, newWatch]);
+                // setCheckOut([...checkOut, itemId])
                 setLoading(false);
             })
-            .catch(err=>{
-                console.log(err);
+            .catch(({message})=>{
+                createError(message);
                 setLoading(false);
             })
         }
     }
 
-    const removeFromWatchlist = (key, itemId)=>{
+    const removeFromWatchlist = (prodId)=>{
         setLoading(true);
-        if(itemId && watchlist.includes(itemId) && watchlist.length > 0){
-            const newCart = watchlist.filter(id=> id !== itemId);
-            cartRef.doc(key).set({watchlist: newCart})
+        const watchId = watchlist.filter(item=> item.productId === prodId)[0].id;
+        if(watchId && watchlist.length > 0){
+            watchlistRef.doc(watchId).delete()
             .then(_=>{
-                setWatchlist(newCart.map(item=> item));
-                setCheckOut(checkOut.filter(item=> item !== itemId));
+                // setWatchlist(watchlist.filter(watch=> watch.id !== watchId));
+                // setCheckOut(checkOut.filter(item=> item !== watchId));
                 setLoading(false);
             })
-            .catch(err=>{
-                console.log(err);
+            .catch(({message})=>{
                 setLoading(false);
+                createError(message);
             })
         }
     }
@@ -73,12 +85,12 @@ function WatchlistProvider({ children }) {
 
     const clearCheckedOut = (key)=>{
         // remove checkedout watchlist items
-        const newCart = watchlist.filter(id=> !checkOut.includes(id));
-        cartRef.doc(key)
-        .update({watchlist: [...newCart]})
+        const newWatchlist = watchlist.filter(id=> !checkOut.includes(id));
+        watchlistRef.doc(key)
+        .update({watchlist: [...newWatchlist]})
         .then(_=>{
             setCheckOut([]);
-            setWatchlist([...newCart]);
+            setWatchlist([...newWatchlist]);
         }).catch(error=> {
             console.log(error);
         })
@@ -89,7 +101,7 @@ function WatchlistProvider({ children }) {
             watchlist, loading, checkOut,
             addToWatchlist, removeFromWatchlist, 
             removeFromCheckout, addToCheckout,
-            clearCheckedOut, getWatchlist
+            clearCheckedOut, getWatchlist, isWatching
         }}>
             {children}
         </WatchlistContext.Provider>
