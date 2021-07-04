@@ -1,7 +1,10 @@
+import moment from 'moment';
 import React, { useState, useContext, useEffect } from 'react';
 import { v4 } from 'uuid';
 import firebase from '../firebase';
 import { useToken, useAuthToken } from '../hooks/token';
+import { useError } from './errorProvider';
+import {useAuth} from './authProvider';
 
 const NotificationContext = React.createContext();
 
@@ -12,29 +15,112 @@ export function useNotification() {
 function NotificationProvider({ children }) {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [token, setToken] = useToken();
-    const [authToken, setAuthToken] = useAuthToken();
-    const [updated, setUpdated] = useState(false);
+    const [token] = useToken();
+    const [authToken] = useAuthToken();
+    const {isAuth} = useAuth();
+    const {createError} = useError();
+    const [unread, setUnread] = useState([]);
 
     // initializing firestore refs
     const store = firebase.firestore();
     const notificationsRef = store.collection('notifications');
+    const watchlistRef = store.collection('watchlist');
 
     useEffect(() => {
         setLoading(true);
-        
         notificationsRef.where("to", "==", token || authToken).onSnapshot(snapChild=>{
-            setNotifications(snapChild.docs.map(doc=> doc.data()) || notifications);
+            console.log(snapChild.docs.map(doc=> doc.data()));
+            setNotifications(snapChild.docs.map(doc=> doc.data()).reverse() || notifications);
+            setUnread(snapChild.docs.filter(doc=> doc.data().read === false).map(item=> item.data()) || unread);
             // on change/updated
             snapChild.docChanges(item=>{
-                setNotifications(item.docs.map(doc=> doc.data()) || notifications);
+                setNotifications(item.docs.map(doc=> doc.data()).reverse() || notifications);
+                setUnread(snapChild.docs.filter(doc=> doc.data().read === false).map(item=> item.data()) || unread);
             });
+            setLoading(false);
         });
     }, []);
 
+    const notifyHold = (productId)=>{
+        watchlistRef.where("productId", "==", productId).get()
+        .then(result=> {
+            const usersToNotify = result.docs.map(doc=> doc.data().userId);
+            usersToNotify.forEach(user=>{
+                const isMe = user === (isAuth ? authToken : token);
+                if(!isMe){
+                    const noteId = v4();
+                    notificationsRef.doc(noteId).set({
+                        createdAt: Date.now(),
+                        id: noteId,
+                        message: "Someone is holding an item you are watching. Make sure to check your watchlist to verify.",
+                        title: "Hold Alert",
+                        to: user,
+                        type: "HOLD_ALERT",
+                        read: false
+                    }).catch(({message})=>{
+                        createError(message);
+                    })
+                }
+            });
+        })
+    }
+
+    const notifyUnheld = (productId)=>{
+        watchlistRef.where("productId", "==", productId).get()
+        .then(result=> {
+            const usersToNotify = result.docs.map(doc=> doc.data().userId);
+            usersToNotify.forEach(user=>{
+                const isMe = user === (isAuth ? authToken : token);
+                if(!isMe){
+                    const noteId = v4();
+                    notificationsRef.doc(noteId).set({
+                        createdAt: Date.now(),
+                        id: noteId,
+                        message: "Someone just unheld an item you are watching. You have the chance to purchase now, don't waste this opportunity.",
+                        title: "Chance Alert",
+                        to: user,
+                        type: "HOLD_ALERT",
+                        read: false
+                    }).catch(({message})=>{
+                        createError(message);
+                    })
+                }
+            });
+        })
+    }
+
+    const markAsRead = (id)=>{
+        if(id){
+            notificationsRef.doc(id).update({read: true}).
+            catch(({message})=>{
+                createError(message);
+            });
+        }else{
+            unread.forEach(note=>{
+                notificationsRef.doc(note.id).update({ read: true })
+                .catch(({message})=>{
+                    createError(message);
+                })
+            })
+        }
+    }
+
+    const deleteNotification = (id)=>{
+        setLoading(true);
+        notificationsRef.doc(id).delete()
+        .then(_=>{
+            // do something here
+            setLoading(false);
+        }).catch(({message})=>{
+            setLoading(false);
+            createError(message);
+        })
+    }
+
     return (
         <NotificationContext.Provider value={{
-            notifications, loading
+            notifications, loading, unread, 
+            notifyHold, notifyUnheld, deleteNotification, markAsRead
         }}>
             {children}
         </NotificationContext.Provider>

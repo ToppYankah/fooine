@@ -3,6 +3,7 @@ import React, { useState, useContext } from 'react';
 import api from '../api';
 import firebase from '../firebase';
 import { useError } from './errorProvider';
+import {useNotification} from './notificationProvider';
 
 const ProductsContext = React.createContext();
 
@@ -39,6 +40,7 @@ function ProductsProvider({ children }) {
     const [categories, setCategories] = useState([]); 
     const [loading, setLoading] = useState(false);
     const {error, createError} = useError();
+    const {notifyHold, notifyUnheld} = useNotification();
 
     const productsRef = firebase.firestore().collection('products');
     const catsRef = firebase.firestore().collection('categories');
@@ -95,6 +97,7 @@ function ProductsProvider({ children }) {
                 productsRef.doc(product.id).update({heldBy: userId, status: 1})
                 .then(_=>{
                     // do something here
+                    notifyHold(product.id);
                 }).catch(error=>{
                     createError(error.message, 2000);
                 })
@@ -109,6 +112,7 @@ function ProductsProvider({ children }) {
             productsRef.doc(product.id).update({heldBy: "", status: 0})
             .then(_=>{
                 // do something here
+                notifyUnheld(product.id);
             }).catch(error=>{
                 createError(error.message);
             })

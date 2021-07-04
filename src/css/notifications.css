@@ -121,15 +121,10 @@
   -moz-transition: 0.15s ease-out;
   -ms-transition: 0.15s ease-out;
   -o-transition: 0.15s ease-out;
-  border: 1px solid #eee;
+  /* border: 1px solid #eee; */
 }
 .notifications .notification-list.hide {
   transform: scale(0);
-  border-radius: 100%;
-  -webkit-border-radius: 100%;
-  -moz-border-radius: 100%;
-  -ms-border-radius: 100%;
-  -o-border-radius: 100%;
   -webkit-transform: scale(0);
   -moz-transform: scale(0);
   -ms-transform: scale(0);
@@ -195,6 +190,9 @@
 .notifications .notification-list .item {
   padding: 10px 20px;
   border-bottom: 1px solid #fafafa;
+}
+.notifications .notification-list .item.unread {
+  background-color: #f0f0f0;
 }
 .notifications .notification-list .item .actions {
   display: flex;
