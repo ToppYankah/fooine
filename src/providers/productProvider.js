@@ -91,16 +91,10 @@ function ProductsProvider({ children }) {
 
     const holdProduct = (userId, product) => {
         if(product && userId){
-            if(product.heldBy === ""){
-                let update = {};
-                update = {heldBy: userId, status: 1}
-                productsRef.doc(product.id).update(update)
+            if(product.status === 0){
+                productsRef.doc(product.id).update({heldBy: userId, status: 1})
                 .then(_=>{
-                    const newProducts = products;
-                    const index = newProducts.indexOf(product);
-                    product = {...product, ...update};
-                    newProducts[index] = product;
-                    setProducts(newProducts.map(item=> item));
+                    // do something here
                 }).catch(error=>{
                     createError(error.message, 2000);
                 })
@@ -112,15 +106,9 @@ function ProductsProvider({ children }) {
 
      const unholdProduct = (userId, product) => {
         if(userId && product){
-            let update = {};
-            update = {heldBy: "", status: 0}
-            productsRef.doc(product.id).update(update)
+            productsRef.doc(product.id).update({heldBy: "", status: 0})
             .then(_=>{
-                const newProducts = products;
-                const index = newProducts.indexOf(product);
-                product = {...product, ...update};
-                newProducts[index] = product;
-                setProducts(newProducts.map(item=> item));
+                // do something here
             }).catch(error=>{
                 createError(error.message);
             })

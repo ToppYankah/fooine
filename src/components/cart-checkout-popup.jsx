@@ -67,7 +67,7 @@ const WatchlistPage = ({onClose})=>{
         <div className="body">
             {watchlist.length < 1 ? 
             <EmptyView message="Your watchlist is Empty" icon={<FaEyeSlash size={80} color="#eee" />}/> : 
-            watchlist.map(({productId}, id) => <CartItem key={id} item={getProductById(productId)} />
+            watchlist.map(({productId}, id) => <WatchlistItem key={id} item={getProductById(productId)} />
             )}
         </div>
         {watchlist.length > 0 && checkOut.length > 0 ? <div className="footer">
@@ -77,11 +77,24 @@ const WatchlistPage = ({onClose})=>{
     </div>
 }
 
-const CartItem = ({item})=>{
+const WatchlistItem = ({item})=>{
     const {removeFromCheckout, addToCheckout, removeFromWatchlist, checkOut} = useWatchlist();
+    const {products} = useProducts();
+    const {isAuth, user} = useAuth();
+    const [token] = useToken();
+    const [fade, setFade] = useState(false);
+
+    useEffect(() => {
+        if(item.status === 1 && (item.heldBy !== (isAuth ? user.id : token))){
+            removeFromCheckout(item.id);
+            setFade(true);
+        }else{
+            setFade(false);
+        }
+    }, [checkOut, products]);
 
     return (
-        <div className="item">
+        <div className={`item ${fade ? 'fade' : ''}`}>
             <div className="check">
                 <div onClick={()=> checkOut.includes(item.id) ? removeFromCheckout(item.id) : addToCheckout(item.id)} className={`checker ${checkOut.includes(item.id) ? 'on' : ''}`}></div>
             </div>
@@ -105,7 +118,15 @@ const CartItem = ({item})=>{
                     justify-content: stretch;
                     padding: 15px var(--padding-x);
                     border-bottom: 1px solid #f5f5f5;
-                    cursor: pointer;
+                }
+                .item.fade::before{
+                    content: "";
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    z-index: 1;
+                    backdrop-filter: blur(1px);
+                    -webkit-backdrop-filter: blur(2px);
+                    pointer-events: none;
                 }
                 .item:hover{
                     background: #fafafa;
@@ -173,6 +194,7 @@ const CartItem = ({item})=>{
                 }
                 .item .price span{
                     font-size: 16px;
+                    cursor: pointer;
                 }
             `}</style>
         </div>

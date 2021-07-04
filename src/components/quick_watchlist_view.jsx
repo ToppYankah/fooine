@@ -7,9 +7,9 @@ import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts } from '../providers/productProvider';
 import EmptyView from './empty_view';
 
-const QuickCartView = () => {
+const QuickWatchlistView = () => {
     const {getProductById} = useProducts();
-    const {removeFromWatchlist, checkOut} = useWatchlist();
+    const {removeFromWatchlist, watchlist, checkOut} = useWatchlist();
     const {isAuth, user} = useAuth();
     const [token] = useToken();
     const [open, setOpen] = useState(true);
@@ -18,10 +18,10 @@ const QuickCartView = () => {
     useEffect(() => {
         setAmount(getCheckoutTally());
         setOpen(true);
-        const timeout = setTimeout(()=>setOpen(false), 2000)
+        const timeout = setTimeout(()=>setOpen(false), 2000)        
         return ()=>{
             clearTimeout(timeout)
-        }
+        }        
     }, [checkOut]);
 
     function getCheckoutTally(){
@@ -37,15 +37,18 @@ const QuickCartView = () => {
             <div onClick={()=> setOpen(!open)} className="toggler">{open ? "Hide WatchList" : "Show WatchList"}</div>
             <div className="body-wrap">
                 <div className="watchlist-list">
-                    {checkOut.map((item, index)=> 
-                        <div key={index} className="item">
-                            <Link to={"/preview-product/" + item}>
-                                <img src={getProductById(item).imageUrl} alt="watchlist item" />
+                    {watchlist.map((item, index)=> {
+                        const product = getProductById(item.productId);
+                        const held = product.status === 1;
+                        const heldByMe = product.heldBy === (isAuth ? user.id : token);
+                        return <div key={index} className={`item ${ (held && !heldByMe) ? "held" : ""}`}>
+                            <Link to={"/preview-product/" + product.id}>
+                                <img src={product.imageUrl} alt="watchlist item" />
                             </Link>
-                            <div onClick={()=> removeFromWatchlist(isAuth ? user.id : token, item)} className="remove-btn">
+                            <div onClick={()=> removeFromWatchlist(product.id)} className="remove-btn">
                                 <Icon name="close-outline" fill="white" size="small" />
                             </div>
-                        </div>
+                        </div>}
                     )}
                     {checkOut.length < 1 ? <EmptyView message="Checkout watchlist is empty" useIcon={false} /> : <></>}
                 </div>
@@ -112,6 +115,9 @@ const QuickCartView = () => {
                 .watchlist-list .item:not(:last-child){
                     margin-right: 20px;
                 }
+                .watchlist-list .item.held img{
+                    filter: blur(1px);
+                }
 
                 .watchlist-list .item .remove-btn{
                     position: absolute;
@@ -166,4 +172,4 @@ const QuickCartView = () => {
     );
 }
 
-export default QuickCartView;
+export default QuickWatchlistView;

@@ -1,5 +1,4 @@
-import { AiFillHeart, AiFillStar, AiOutlineHeart, AiOutlineShareAlt, AiOutlineStar } from '@meronex/icons/ai';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Icon from 'react-eva-icons';
 import { Link } from 'react-router-dom';
 import { useToken } from '../hooks/token';
@@ -13,13 +12,6 @@ const LiveFeedCard = ({feed}) => {
     const {products, like, share, holdProduct, unholdProduct} = useProducts();
     const {watchlist, isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const productId = feed.id;
-    const [heldByMe, setHeldByMe] = useState(false);
-    const [held, setHeld] = useState(false);
-
-    useEffect(() => {
-        setHeldByMe(feed.heldBy === (isAuth ? user.id : token));
-        setHeld(feed.heldBy !== "");
-    }, [products]);
 
     const onViewItem = ()=>{
         // set current open feed
@@ -48,7 +40,7 @@ const LiveFeedCard = ({feed}) => {
         style={{backgroundImage: `url(${feed.imageUrl})`}}
         >
             <div style={{display: "flex", paddingTop: 20}}>
-                {held && <img src="/images/held-img.png" style={{opacity: 0.9, margin: "0 auto"}} width="50%" />}
+                {feed.status === 1 ? <img src="/images/held-img.png" style={{opacity: 0.9, margin: "0 auto"}} width="50%" /> : <></>}
             </div>
             <div className="details" onClick={onViewItem}>
                 <div style={{background: getStatus(feed.status).color}} className="status">{getStatus(feed.status).value}</div>
@@ -59,20 +51,20 @@ const LiveFeedCard = ({feed}) => {
                 </Link>
                 {feed.status !== 2 ? 
                 <div className="add-section">
-                    {held ? <></> :<label htmlFor={feed.id} className="add-to-watchlist">
+                    {feed.heldBy === (isAuth ? user.id : token) ? <></> :<label htmlFor={feed.id} className="add-to-watchlist">
                         <input type="checkbox" checked={isWatching(feed.id)} name="add-watchlist" className="add-watchlist" id={feed.id} onChange={handleAddToWatchlist} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
                         <span>{isWatching(feed.id) ? "Unwatch" : "Watch"}</span>
                     </label>}
-                    {held && !heldByMe ? 
+                    {feed.status === 1 && !(feed.heldBy === (isAuth ? user.id : token )) ? 
                     <></> : <label htmlFor={`${feed.id}hold`} className="hold">
-                        <input type="checkbox" checked={heldByMe} name="add-watchlist" className="add-watchlist" id={`${feed.id}hold`} onChange={handleHoldItem} />
+                        <input type="checkbox" checked={(feed.heldBy === (isAuth ? user.id : token ))} name="add-watchlist" className="add-watchlist" id={`${feed.id}hold`} onChange={handleHoldItem} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
-                        <span>{heldByMe ? "Drop" : "Hold"}</span>
+                        <span>{(feed.heldBy === (isAuth ? user.id : token )) ? "Drop" : "Hold"}</span>
                     </label>}
                 </div> : 
                 <></>}
