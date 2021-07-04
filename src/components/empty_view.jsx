@@ -4,7 +4,7 @@ import Icon from 'react-eva-icons/dist/Icon';
 const EmptyView = ({message, icon, useIcon = true}) => {
     return (
         <div className="empty-box">
-            {useIcon ? <Icon name={icon} size="xlarge" fill="#ddd" /> : <></>}
+            {useIcon ? icon : <></>}
             <p style={{marginTop: useIcon ? 20 : 0}}>{message}</p>
             <style jsx>{`
                 .empty-box{
@@ -15,10 +15,15 @@ const EmptyView = ({message, icon, useIcon = true}) => {
                     align-items: center;
                     justify-content: center;
                     height: 100%;
+                    position: absolute;
+                    left: 0;
+                    right: 0; 
+                    bottom: 0; 
+                    top: 0;
                 }
 
                 .empty-box p{
-                    font-size: 16px;
+                    font-size: 14px;
                     color: #999;
                 }
             `}</style>

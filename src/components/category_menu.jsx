@@ -82,13 +82,13 @@ const CategoryMenu = ({categories, onChange}) => {
                 }
 
                 .category-menu .item{
-                    padding: 15px;
+                    padding: 10px 15px;
                     border-radius: 15px;
                     color: var(--text-color);
                     margin-right: 20px;
                     cursor: pointer;
                     display: flex;
-                    font-size: 14px;
+                    font-size: 13px;
                     box-shadow: 0 0 10px #ddd;
                 }
 

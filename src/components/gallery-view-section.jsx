@@ -7,26 +7,25 @@ import CategoryMenu from './category_menu';
 import { AiOutlineHeart, AiFillHeart, AiOutlineStar, AiFillStar, AiOutlineShareAlt } from '@meronex/icons/ai';
 import { BsStopwatchFill, BsStopwatch } from '@meronex/icons/bs';
 import { Link } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
 
 
 const GalleryViewSection = () => {
-    const {products: prods, categories, getProducts, like, addToWishList, holdProduct, unholdProduct } = useProducts();
-    const {cart, checkout, addToCart, removeFromCart} = useCart();
+    const {products: _products, categories, getProducts, like, addToWishList, holdProduct, unholdProduct } = useProducts();
+    const {cart, addToCart, removeFromCart} = useCart();
     const [token] = useToken();
     const {user, isAuth} = useAuth();
-    const [products, setProducts] = useState(prods);
+    const [products, setProducts] = useState(_products.map(item=> item));
     const [categoryFilter, setCategoryFilter] = useState("");
-    const [randomize, setRandomize] = useState(true);
     const [prevShuffle, setPrevShuffle] = useState([]);
 
     useEffect(() => {
         const shuffleResult = shuffle(getProducts(categoryFilter));
         setPrevShuffle( shuffleResult);
-        setProducts(shuffleResult);
+        setProducts(shuffleResult.map(item=> item));
     }, [categoryFilter]);
 
     useEffect(() => {
-        console.log(prevShuffle);
         setProducts(prevShuffle.map(item=>{ 
             let output;
             const currentProducts = getProducts(categoryFilter);
@@ -37,7 +36,7 @@ const GalleryViewSection = () => {
             });
             return output;
         }));
-    }, [prods]);
+    }, [_products]);
 
     const shuffle = (array)=>{
         var currentIndex = array.length,  randomIndex;
@@ -70,7 +69,7 @@ const GalleryViewSection = () => {
             <div className="inner">
                 <div className="category-section">
                     <div className="mute-heading">
-                        <hr /><b>Filter By</b><hr />
+                        <hr /><b>Choose Filter</b><hr />
                     </div>
                     <button className="cat-item active">No Filter</button>
                     <button className="cat-item">Added Today</button>
@@ -79,68 +78,75 @@ const GalleryViewSection = () => {
                     <button className="cat-item">Recently Added</button>
                 </div>
                 <section className="product-section">
-                    {products.map(product=> {
-                        const heldByMe = product.heldBy === (isAuth ? user.id : token);
-                        const held = product.heldBy !== "";
-                    return <div className="item">
-                        {held && <img className="held-img" src="/images/held-img.png"/>}
-                        <img draggable="false" src={product.imageUrl} alt="product item" />
-                        <div className="content">
-                            <Link to={`/preview-product/${product.id}`} className="preview-button"></Link>
-                            <div className="details">
-                                <h3>{product.name}</h3>
-                            </div>
-                            {product.status === 2 ? <></> : <div className="add-cart">
-                                <p><small>GHC</small><big>{parseFloat(product.price).toFixed(2)}</big></p>
-                                {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${cart.includes(product.id) ? "" : "active"}`}>{cart.includes(product.id) ? "Remove from cart" : "Add to cart"}</button>}
-                            </div>}
-                            <div className="actions">
-                                <div onClick={()=> like(isAuth ? user.id : token, product)} className="act">
-                                    <div className="tag">{product.likes.length}</div>
-                                    {product.likes.includes(isAuth ? user.id : token) ? <AiFillHeart size={20} color="red" /> : <AiOutlineHeart size={20} color="#fff" /> }
+                    <div className="grid">
+                        {products.map(product=> {
+                            const heldByMe = product.heldBy === (isAuth ? user.id : token);
+                            const held = product.heldBy !== "";
+                        return <div key={product.id} className="item">
+                            {held && <img className="held-img" src="/images/held-img.png"/>}
+                            <img draggable="false" src={product.imageUrl} alt="product item" />
+                            <div className="content">
+                                <Link to={`/preview-product/${product.id}`} className="preview-button"></Link>
+                                <div className="details">
+                                    <h3>{product.name}</h3>
                                 </div>
-                                <div onClick={()=> addToWishList(isAuth ? user.id : token, product)} className="act">
-                                    <div className="tag">{product.wishlist.length}</div>
-                                    {product.wishlist.includes(isAuth ? user.id : token) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
-                                </div>
-                                {(held && !heldByMe) || product.status === 2 ? 
-                                <></> : 
-                                <div onClick={()=> { heldByMe ? 
-                                    unholdProduct(isAuth ? user.id : token, product) : 
-                                    holdProduct(isAuth ? user.id : token, product)}} 
-                                    className="act"
-                                >
-                                    <div className="tag">{held ? "Unhold" : "Hold"}</div>
-                                    {held ? <BsStopwatchFill size={20} color="#fff" /> : <BsStopwatch size={20} color="#fff" />}
+                                {product.status === 2 ? <></> : <div className="add-cart">
+                                    <p><small>GHC</small><big>{parseFloat(product.price).toFixed(2)}</big></p>
+                                    {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${cart.includes(product.id) ? "" : "active"}`}>{cart.includes(product.id) ? 
+                                    (<><FaEyeSlash style={{marginRight: 5}} size={18} color="#222" /><span>Unwatch</span></>) : 
+                                    (<><FaEye style={{marginRight: 5}} size={18} color="#fff" /><span>Watch</span></>)}</button>}
                                 </div>}
+                                <div className="actions">
+                                    <div onClick={()=> like(isAuth ? user.id : token, product)} className="act">
+                                        <div className="tag">{product.likes.length}</div>
+                                        {product.likes.includes(isAuth ? user.id : token) ? <AiFillHeart size={20} color="red" /> : <AiOutlineHeart size={20} color="#fff" /> }
+                                    </div>
+                                    <div onClick={()=> addToWishList(isAuth ? user.id : token, product)} className="act">
+                                        <div className="tag">{product.wishlist.length}</div>
+                                        {product.wishlist.includes(isAuth ? user.id : token) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
+                                    </div>
+                                    {(held && !heldByMe) || product.status === 2 ? 
+                                    <></> : 
+                                    <div onClick={()=> { heldByMe ? 
+                                        unholdProduct(isAuth ? user.id : token, product) : 
+                                        holdProduct(isAuth ? user.id : token, product)}} 
+                                        className="act"
+                                    >
+                                        <div className="tag">{held ? "Unhold" : "Hold"}</div>
+                                        {held ? <BsStopwatchFill size={20} color="#fff" /> : <BsStopwatch size={20} color="#fff" />}
+                                    </div>}
+                                </div>
                             </div>
-                        </div>
-                        <div style={{background: getStatus(product.status).color}} className="status">{getStatus(product.status).value}</div>
-                    </div>})}
+                            <div style={{background: getStatus(product.status).color}} className="status">{getStatus(product.status).value}</div>
+                        </div>})}
+                    </div>
                 </section>
             </div>
             <style jsx>{`
                 .gallery-view{
-                    padding-bottom: 60px;
-                    min-height: 100%;
                     width: 100%;
+                    height: calc(100vh - 60px);
+                    overflow: hidden;
                 }
 
                 .gallery-view .inner{
                     display: flex;
                     width: 100%;
                     padding: 20px 5%;
+                    padding-top: 0;
                 }
 
                 .gallery-view .inner .category-section{
+                    margin-top: 20px;
                     padding: 20px 2%;
-                    min-width: 300px;
+                    min-width: 250px;
                     margin-right: 5%;
                     box-shadow: 0 0 20px #efefef;
                     border-radius: 20px;
                     align-self: start;
                     display: flex;
                     flex-direction: column;
+                    border: 1px solid #eee;
                 }
                 @media(max-width: 850px){
                     .gallery-view .inner .category-section{
@@ -150,13 +156,14 @@ const GalleryViewSection = () => {
 
                 .gallery-view .inner .category-section > button{
                     margin-top: 10px;
-                    padding: 15px;
+                    padding: 10px 15px;
                     border-radius: 10px;
                     border:none;
                     text-align: left;
                     cursor: pointer;
                     transition: all .2s linear;
                     background: transparent;
+                    font-size: 12px
                 }
 
                 .gallery-view .inner .category-section > button:hover{
@@ -169,9 +176,15 @@ const GalleryViewSection = () => {
                 }
 
                 .gallery-view .inner section{
+                    overflow: auto;
+                    height: calc(100vh - 150px);
+                }
+                .gallery-view .inner section .grid{
                     display: grid;
                     grid-template-columns: repeat(3, 31.5%);
                     grid-gap: 2%;
+                    padding-bottom: 60px;
+                    padding-top: 20px;
                 }
                 @media(max-width: 1090px){
                     .gallery-view .inner section{
@@ -266,6 +279,8 @@ const GalleryViewSection = () => {
                     background: #fff;
                     font-size: 12px;
                     cursor: pointer;
+                    display: flex;
+                    align-items: center;
                 }
                 .gallery-view .item .content .add-cart button.active{
                     background: var(--dark-color);
@@ -273,13 +288,12 @@ const GalleryViewSection = () => {
                 }
                 .gallery-view .item .status{
                     position: absolute;
-                    right: 0;
-                    top: 15px;
+                    right: 10px;
+                    top: 10px;
                     color: #fff;
                     font-size: 12px;
                     padding: 10px 5%;
-                    border-top-left-radius: 10px;
-                    border-bottom-left-radius: 10px;
+                    border-radius: 10px 10px 10px 10px;
                 }
 
                 .gallery-view .item .actions{

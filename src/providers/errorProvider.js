@@ -1,0 +1,25 @@
+import React, { useState, useContext } from 'react';
+
+const ErrorContext = React.createContext();
+
+export function useError() {
+    return useContext(ErrorContext);
+}
+
+function ErrorProvider({ children }) {
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const createError = (errorMsg, timelapse = 3000)=>{
+        setError(errorMsg);
+        setTimeout(()=> setError(null), timelapse);
+    }
+
+    return (
+        <ErrorContext.Provider value={{ error, createError }}>
+            {children}
+        </ErrorContext.Provider>
+    )
+}
+
+export default ErrorProvider;

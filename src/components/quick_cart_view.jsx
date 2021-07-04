@@ -18,13 +18,15 @@ const QuickCartView = () => {
     useEffect(() => {
         setAmount(getCheckoutTally());
         setOpen(true);
-        setTimeout(()=>setOpen(false), 2000)
+        const timeout = setTimeout(()=>setOpen(false), 2000)
+        return ()=>{
+            clearTimeout(timeout)
+        }
     }, [checkOut]);
 
     function getCheckoutTally(){
         let output = 0.00;
         checkOut.forEach(itemId=>{
-            console.log(itemId, getProductById(itemId))
             output += parseFloat(getProductById(itemId).price);
         });
         return output;
@@ -32,11 +34,11 @@ const QuickCartView = () => {
 
     return (
         <div className={`quick-cart-view ${open ? "show" : ""}`}>
-            <div onClick={()=> setOpen(!open)} className="toggler">{open ? "Hide Cart" : "Show Cart"}</div>
+            <div onClick={()=> setOpen(!open)} className="toggler">{open ? "Hide WatchList" : "Show WatchList"}</div>
             <div className="body-wrap">
                 <div className="cart-list">
-                    {checkOut.map(item=> 
-                        <div className="item">
+                    {checkOut.map((item, index)=> 
+                        <div key={index} className="item">
                             <Link to={"/preview-product/" + item}>
                                 <img src={getProductById(item).imageUrl} alt="cart item" />
                             </Link>
@@ -45,11 +47,11 @@ const QuickCartView = () => {
                             </div>
                         </div>
                     )}
-                    {checkOut.length < 1 ? <EmptyView message="Checkout cart is empty" useIcon={false} /> : <></>}
+                    {checkOut.length < 1 ? <EmptyView message="Checkout watchlist is empty" useIcon={false} /> : <></>}
                 </div>
                 {checkOut.length > 0 ?<div className="checkout-btn-box">
                     <p><small>GHC</small><big>{parseFloat(amount).toFixed(2)}</big></p>
-                    <Link to="/cart/checkout" className="btn">Checkout</Link>
+                    <Link to="/watchlist/checkout" className="btn">Checkout</Link>
                 </div> : <></>}
             </div>
             <style jsx>{`
@@ -76,7 +78,6 @@ const QuickCartView = () => {
                     border-top-right-radius: 10px;
                     border-top-left-radius: 10px;
                     cursor: pointer;
-                    font-weight: bold;
                     color: #fff;
                     letter-spacing: 1px;
                 }

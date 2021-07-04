@@ -3,7 +3,6 @@ import LiveFeedCard from './feed_card';
 import { Link } from 'react-router-dom';
 
 const LiveFeedSection = ({products}) => {
-    console.log(products);
     useEffect(() => {
         const feedsScrollView = document.getElementById('scroll-feed');
         let feedsPos = { top: 0, left: 0, x: 0, y: 0 };
@@ -81,13 +80,15 @@ const LiveFeedSection = ({products}) => {
                     padding: 10px 20px;
                     border-radius: 20px;
                     box-shadow: 0 0 10px #ff00001a;
+                    background: #222;
+                    color: #fff;
                 }
 
                 .feed-section .live-notice hr{
                     flex: 1;
                     border: none;
                     border-top: 1px solid;
-                    border-color: #fafafa;
+                    border-color: #efefef;
 
                 }
 
@@ -139,11 +140,11 @@ const LiveFeedSection = ({products}) => {
                 }
 
                 .feed-section .vanishing-point.left{
-                    background: linear-gradient(to right, white, transparent);
+                    background: linear-gradient(to right, transparent, transparent);
                     left: 0;
                 }
                 .feed-section .vanishing-point.right{
-                    background: linear-gradient(to left, white, transparent);
+                    background: linear-gradient(to left, transparent, transparent);
                     right: 0;
                 }
 

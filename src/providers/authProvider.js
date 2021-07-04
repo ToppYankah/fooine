@@ -4,6 +4,7 @@ import api from '../api';
 import firebase from '../firebase';
 import { useToken, useAuthToken } from '../hooks/token';
 import {generate as generateHash} from 'password-hash';
+import { useError } from './errorProvider';
 
 const AuthContext = React.createContext();
 
@@ -15,7 +16,7 @@ function AuthProvider({ children }) {
     const [user, setUser] = useState({});
     const [isAuth, setIsAuth] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const {error, createError} = useError()
     const [token, setToken] = useToken();
     const [authToken, setAuthToken] = useAuthToken();
 
@@ -63,12 +64,12 @@ function AuthProvider({ children }) {
         }
     }
 
-    const throwError = (err)=>{
-        setError(err);
-        setTimeout(()=>{
-            setError("");
-        }, 2000)
-    }   
+    // const throwError = (err)=>{
+    //     setError(err);
+    //     setTimeout(()=>{
+    //         setError("");
+    //     }, 2000)
+    // }   
 
     const login = ({email, password}) => {
         setLoading(true);
@@ -87,7 +88,7 @@ function AuthProvider({ children }) {
                 setUser(foundUser);
                 setIsAuth(true);
             }else{
-                throwError("User does not exist");
+                createError("User does not exist", 2000);
             }
             setLoading(false);
         }).catch(error=>{
@@ -114,7 +115,7 @@ function AuthProvider({ children }) {
             });
         }else{
             setLoading(false);
-            throwError("Passwords does not match")
+            createError("Passwords does not match", 2000)
         }
     }
 

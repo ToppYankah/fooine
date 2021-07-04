@@ -8,7 +8,7 @@ import { Link, useHistory } from 'react-router-dom';
 const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const {login, isAuth, loading, error} = useAuth()
+    const {login, isAuth, loading} = useAuth()
     const history = useHistory();
 
     useEffect(() => {
@@ -38,9 +38,9 @@ const LoginForm = () => {
             <div className="inner">
                 <h3>Login to account</h3>
                 <form onSubmit={handleSubmit} className="form-area">
-                    <div className="error-box">
+                    {/* <div className="error-box">
                         <p>{error.toString()}</p>
-                    </div>
+                    </div> */}
                     <InputBox icon="email-outline" value={email} name="email" placeholder="Enter your email" type="email" onChange={({target: {value}})=> setEmail(value)} />
                     <InputBox icon="lock-outline" value={password} name="password" placeholder="Enter password" type="password" onChange={({target: {value}})=> setPassword(value)} />
                     <div className="btn-box">

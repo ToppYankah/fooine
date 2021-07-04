@@ -2,6 +2,7 @@
 import React, { useState, useContext } from 'react';
 import api from '../api';
 import firebase from '../firebase';
+import { useError } from './errorProvider';
 
 const ProductsContext = React.createContext();
 
@@ -37,6 +38,7 @@ function ProductsProvider({ children }) {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]); 
     const [loading, setLoading] = useState(false);
+    const {error, createError} = useError();
 
     const productsRef = firebase.firestore().collection('products');
     const catsRef = firebase.firestore().collection('categories');
@@ -50,12 +52,6 @@ function ProductsProvider({ children }) {
             console.log(err);
         })
 
-        // productsRef.get().then(item=>{
-        //     setProducts(item.docs.map(doc=> doc.data()) || []);
-        //     setLoading(false);
-        // }).catch(err=>{
-        //     console.log(err);
-        // })   
         productsRef.onSnapshot(snapshot=>{
             setProducts(snapshot.docs.map(doc=> doc.data()) || []);
             setLoading(false);
@@ -64,8 +60,6 @@ function ProductsProvider({ children }) {
                 setProducts(item.docs.map(doc=> doc.data()) || []);
             });
         });       
-
-        console.log("products", products);
     }
 
     const getProductById = (id)=>{
@@ -97,18 +91,22 @@ function ProductsProvider({ children }) {
 
     const holdProduct = (userId, product) => {
         if(product && userId){
-            let update = {};
-            update = {heldBy: userId, status: 1}
-            productsRef.doc(product.id).update(update)
-            .then(_=>{
-                const newProducts = products;
-                const index = newProducts.indexOf(product);
-                product = {...product, ...update};
-                newProducts[index] = product;
-                setProducts(newProducts.map(item=> item));
-            }).catch(error=>{
-                console.log(error);
-            })
+            if(product.heldBy !== ""){
+                let update = {};
+                update = {heldBy: userId, status: 1}
+                productsRef.doc(product.id).update(update)
+                .then(_=>{
+                    const newProducts = products;
+                    const index = newProducts.indexOf(product);
+                    product = {...product, ...update};
+                    newProducts[index] = product;
+                    setProducts(newProducts.map(item=> item));
+                }).catch(error=>{
+                    createError(error.message, 2000);
+                })
+            }else{
+                createError("Item has already been held!", 3000);
+            }            
         }
     }
 
@@ -124,7 +122,7 @@ function ProductsProvider({ children }) {
                 newProducts[index] = product;
                 setProducts(newProducts.map(item=> item));
             }).catch(error=>{
-                console.log(error);
+                createError(error.message);
             })
         }
     }

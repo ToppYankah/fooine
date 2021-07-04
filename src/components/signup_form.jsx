@@ -12,7 +12,7 @@ const SignupForm = () => {
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [c_password, setCPassword] = useState("");
-    const {signup, loading, error, isAuth} = useAuth();
+    const {signup, loading, isAuth} = useAuth();
     const history = useHistory()
 
     useEffect(() => {
@@ -42,9 +42,9 @@ const SignupForm = () => {
             <div className="inner">
                 <h3>Create An Account</h3>
                 <form onSubmit={handleSubmit} className="form-area">
-                    <div className="error-box">
+                    {/* <div className="error-box">
                         <p>{error}</p>
-                    </div>
+                    </div> */}
                     <InputBox value={username} icon="person-outline" name="name" placeholder="Enter your name" type="text" onChange={({target: {value}})=> setUserName(value)} />
                     <InputBox value={email} icon="email-outline" name="email" placeholder="Enter your email" type="text" onChange={({target: {value}})=> setEmail(value)} />
                     <InputBox value={phone} icon="phone-outline" name="telephone" placeholder="Enter telephone number" type="number" onChange={({target: {value}})=> setPhone(value)} />

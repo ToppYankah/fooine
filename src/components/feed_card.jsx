@@ -64,21 +64,21 @@ const LiveFeedCard = ({feed}) => {
                 </Link>
                 {feed.status !== 2 ? 
                 <div className="add-section">
-                    {held ? <></> :<div className="add-to-cart">
+                    {held ? <></> :<label htmlFor={feed.id} className="add-to-cart">
                         <input type="checkbox" checked={cart.includes(feed.id)} name="add-cart" className="add-cart" id={feed.id} onChange={handleAddToCart} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
-                        <label for={feed.id}>{cart.includes(feed.id) ? "Remove" : "Add"}</label>
-                    </div>}
+                        <span>{cart.includes(feed.id) ? "Unwatch" : "Watch"}</span>
+                    </label>}
                     {held && !heldByMe ? 
-                    <></> : <div className="hold">
+                    <></> : <label htmlFor={`${feed.id}hold`} className="hold">
                         <input type="checkbox" checked={heldByMe} name="add-cart" className="add-cart" id={`${feed.id}hold`} onChange={handleHoldItem} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
-                        <label for={`${feed.id}hold`}>{heldByMe ? "Drop" : "Hold"}</label>
-                    </div>}
+                        <span>{heldByMe ? "Drop" : "Hold"}</span>
+                    </label>}
                 </div> : 
                 <></>}
             </div>
@@ -102,8 +102,9 @@ const LiveFeedCard = ({feed}) => {
                     padding-top: 10px;
                     padding-right: 20px;
                 }
-                .feed-card .add-section > div{
+                .feed-card .add-section > label{
                     display: flex;
+                    cursor: pointer;
                 }
                 .feed-card .add-cart{display: none}
                 .feed-card .add-cart:checked + .check-box{
@@ -125,9 +126,8 @@ const LiveFeedCard = ({feed}) => {
                 .feed-card .add-section .check-box > *{
                     display: none;
                 }
-                .feed-card .add-section label{
+                .feed-card .add-section span{
                     font-size: 12px;
-                    cursor: pointer;
                 }
 
                 .feed-card:not(:last-child){

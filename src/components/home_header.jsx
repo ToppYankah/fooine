@@ -1,3 +1,5 @@
+import { AiOutlineSearch } from '@meronex/icons/ai';
+import { FaEye } from '@meronex/icons/fa';
 import React, {useState, useEffect} from 'react';
 import Icon from 'react-eva-icons';
 import { Link } from 'react-router-dom';
@@ -16,7 +18,7 @@ const HomeHeader = ({onSearch}) => {
         {authenticated ? 
         <>
             <Link to='/profile' className='profile-button'>
-                    <Icon name="person-outline" fill='#555' size="medium" />
+                    <Icon name="person-outline" fill='#eee' size="medium" />
                     <b style={{marginLeft: 5}}>Profile</b>
             </Link>
         </> : 
@@ -25,33 +27,34 @@ const HomeHeader = ({onSearch}) => {
                 <b>Login</b>
             </Link>
             <Link to='/signup' className='profile-button auth'>
-                <b><pre>Sign up</pre></b>
+                <b><pre>Signup</pre></b>
             </Link>
         </>}
-        <Link to='/cart' className='profile-button'>
-            <Icon name="shopping-cart-outline" fill='#555' size="medium" />
-            <b style={{marginLeft: 5}}>Cart</b>
+        <Link to='/watchlist' className='profile-button'>
+            <FaEye size={18} color="#eee" />
+            <b style={{marginLeft: 5}}>WatchList</b>
         </Link>
         </>
     }
 
     return (
         <div className='home-header'>
-            <h4><pre>FOINE</pre></h4>
+            <h4 style={{color: "#fff"}}><pre>FOINE.COM</pre></h4>
             <div className="search-form">
-                <Icon name="search" fill='#555' />
-                <input onChange={({target: {value}})=> onSearch(value)} type="text" placeholder='Search' aria-placeholder="Search" className="search-input"/>
+                <AiOutlineSearch size={20} color="#555" />
+                <input onChange={({target: {value}})=> onSearch(value)} type="text" placeholder='Search by name or category' aria-placeholder="Search by name or category" className="search-input"/>
             </div>
             {renderAuth()}
             <style jsx>{`
                 .home-header{
-                    padding: 20px 5%;
+                    padding: 10px 5%;
                     display: flex;
                     align-items: center;
+                    background: #222;
                 }
 
                 .home-header .search-form{
-                    border-radius: 15px;
+                    border-radius: 20px;
                     flex: 1;
                     background: #f5f5f5;
                     display: flex;
@@ -63,9 +66,15 @@ const HomeHeader = ({onSearch}) => {
                 .search-form input{
                     border: none;
                     background: transparent;
-                    padding: 15px;
+                    padding: 10px 15px;
                     outline: none;
                     flex: 1;
+                    font-size: 12px;
+                }
+
+                .search-form input::-webkit-input-placeholder{
+                    font-size: 12px;
+                    color: #aaa;
                 }
 
                 .profile-button{
@@ -75,7 +84,7 @@ const HomeHeader = ({onSearch}) => {
                     justify-content: center;
                     font-size: 14px;
                     font-family: var(--font-bold);
-                    color: var(--text-color);
+                    color: #ccc;
                 }
 
                 .profile-button:not(:last-child){

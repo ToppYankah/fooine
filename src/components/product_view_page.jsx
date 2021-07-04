@@ -1,3 +1,4 @@
+import { FaEye, FaEyeSlash, FaStopwatch } from '@meronex/icons/fa';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { useParams } from 'react-router-dom';
@@ -9,7 +10,7 @@ import Loader from './simple_loader';
 
 const ProductViewPage = () => {
     const params = useParams();
-    const {products, comment, fetchProductById, getProductById} = useProducts();
+    const {products, comment, fetchProductById, getProductById, holdProduct, unholdProduct} = useProducts();
     const {cart, addToCart, removeFromCart} = useCart();
     const {isAuth, user} = useAuth();
     const [token] = useToken();
@@ -65,22 +66,22 @@ const ProductViewPage = () => {
                         </div>               
                     </div>
                     <div className="purchase-actions">
-                        {/* <button onClick={()=> held ? unholdProduct(product.id) : holdProduct(product.id, 1)} id="hold">
-                            <Icon name="pause-circle-outline" size="medium" fill="var(--dark-color)" />
-                            <b>{held ? "Unhold Item" : "Hold Item"}</b>
-                        </button> */}
+                        <button onClick={()=> true ? unholdProduct(isAuth ? user.id : token, product) : holdProduct(isAuth ? user.id : token, product)} id="hold">
+                            <FaStopwatch size={18} color="#fff" />
+                            <span>{true ? "Unhold Item" : "Hold Item"}</span>
+                        </button>
                         {product.status !== 2 ? <button onClick={()=> inCart ? removeFromCart(isAuth ? user.id : token, product.id) : addToCart(isAuth ? user.id : token, product.id)} id="add-to-cart">
-                            <Icon name="shopping-cart-outline" size="medium" fill="#fff" />
-                            <b>{inCart ? 'Remove from cart' : 'Add to cart'}</b>
+                            {inCart ? <FaEyeSlash size={20} color="#fff" /> : <FaEye size={20} color="#fff" />}
+                            <span>{inCart ? 'Unwatch Item' : 'Watch Item'}</span>
                         </button> : <></>}
                     </div>
-                    <div className="mute-heading">
-                        <hr /><b>Comments</b><hr />
-                    </div>
+                    {/* <div className="mute-heading">
+                        <hr /><b>comment</b><hr />
+                    </div> */}
                     <div className="comment-section">
                     </div>
                         <form onSubmit={handleComment} className="comment-input">
-                            <input type="text" value={commentMsg} onChange={({target: {value}})=> setCommentMsg(value)} placeholder="Leave a comment on this item" />
+                            <input type="text" value={commentMsg} onChange={({target: {value}})=> setCommentMsg(value)} placeholder="Leave a comment..." />
                         </form>
                         <div className="comments-list">
                             {product.comments.map(comment => <Comment  comment={comment}/>)}
@@ -261,7 +262,7 @@ const ProductViewPage = () => {
                     padding: 10px;
                     border-radius: 10px;
                     color: white;
-                    font-size: 13px;
+                    font-size: 12px;
                     border: 1px solid var(--dark-color);
                     cursor: pointer;
                     display: flex;
@@ -269,13 +270,14 @@ const ProductViewPage = () => {
                     align-items: center;
                 }
 
-                .purchase-actions button b{
+                .purchase-actions button span{
                     margin-left: 10px;
                 }
 
                 #hold{
-                    background: transparent;
-                    color: var(--dark-color);
+                    background: #222;
+                    color: #fff;
+                    border: 1px solid #222;
                     margin-right: 20px;
                 }
                 #add-to-cart{
@@ -284,14 +286,15 @@ const ProductViewPage = () => {
 
                 .comment-section{
                     padding: 0 5%;
+                    margin-top: 20px;
                 }
 
                 .comment-input{
                     display: flex;
                     align-items: center;
-                    padding: 5px 10px;
+                    padding: 2px 10px;
                     background-color: #f0f0f0;
-                    border-radius: 10px;
+                    border-radius: 20px;
                 }
 
                 .comment-input input{

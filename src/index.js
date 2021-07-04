@@ -6,16 +6,22 @@ import reportWebVitals from './reportWebVitals';
 import ProductsProvider from './providers/productProvider';
 import AuthProvider from './providers/authProvider';
 import CartProvider from './providers/cartProvider';
+import NotificationProvider from './providers/notificationProvider';
+import ErrorProvider from './providers/errorProvider';
 
 ReactDOM.render(
   <React.StrictMode>
+    <ErrorProvider>
       <AuthProvider>
-        <ProductsProvider>
-          <CartProvider>
-              <App />
-          </CartProvider>
-        </ProductsProvider>
+        <NotificationProvider>
+          <ProductsProvider>
+            <CartProvider>
+                <App />
+            </CartProvider>
+          </ProductsProvider>
+        </NotificationProvider>
       </AuthProvider>
+    </ErrorProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -1,3 +1,4 @@
+import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { usePaystackPayment } from 'react-paystack';
@@ -31,10 +32,10 @@ const CartCheckoutPopup = () => {
         <div className="cart-popup">
             <div className="overlay" onClick={handleClose}></div>
             <div className="inner">
-                <Route exact path="/cart/checkout">
+                <Route exact path="/watchlist/checkout">
                     <CheckoutPage onClose={handleGoBack} />
                 </Route>
-                <Route exact path="/cart">
+                <Route exact path="/watchlist">
                     <CartPage onClose={handleGoBack} />
                 </Route>
             </div>
@@ -61,17 +62,17 @@ const CartPage = ({onClose})=>{
 
     return <div className="cart-page">
         <div className="header">
-            <h3>My Cart</h3>
+            <h3>My WatchList</h3>
             <div onClick={onClose} className="close-btn">{'x'}</div>
         </div>
         <div className="body">
             {cart.length < 1 ? 
-            <EmptyView message="Your cart is Empty" icon="shopping-cart-outline"/> : 
+            <EmptyView message="Your watchlist is Empty" icon={<FaEyeSlash size={80} color="#eee" />}/> : 
             cart.map((itemId, id) => <CartItem key={id} item={getProductById(itemId)} />
             )}
         </div>
         {cart.length > 0 && checkOut.length > 0 ? <div className="footer">
-            <Link to="/cart/checkout" className="submit-btn">Proceed to checkout</Link>
+            <Link to="/watchlist/checkout" className="submit-btn">Proceed to checkout</Link>
             <p className="price-tally"><b>GHC</b><h3>{getCheckoutTally().toFixed(2)}</h3></p>
         </div> : <></>}
     </div>
@@ -93,7 +94,7 @@ const CartItem = ({item})=>{
                     <h3>{item.name}</h3>
                     <p className="size">{item.size}</p>
                     <p className="size">{item.category}</p>
-                    <span className="tag">{getStatus(item.status).value}</span>
+                    {/* <span className="tag">{getStatus(item.status).value}</span> */}
                 </Link >
                 <div className="price">
                     <p><small>GHC</small><span>{parseFloat(item.price).toFixed(2)}</span></p>
@@ -129,7 +130,7 @@ const CartItem = ({item})=>{
 
                 .item .img{
                     width: 60px;
-                    height: 70px;
+                    height: 60px;
                     background-size: cover;
                     background-position: center;
                     margin-right: 15px;
@@ -152,7 +153,7 @@ const CartItem = ({item})=>{
                 }
                 .item .info .size, 
                 .item .info .tag{
-                    margin: 2px 0;
+                    margin: 0px 0;
                     font-size: 12px;
                 }
 
@@ -253,14 +254,6 @@ const CheckoutPage = ({onClose})=>{
         </div>
         <div className="body">
             <ProductsViewForCheckout checkoutProducts={getProductsForCheckout()} />
-            {isAuth ? <></> :<div className="email-setup">
-                <div className='label'>
-                    Email Address
-                </div>
-                <div className="email-input">
-                    <input autoFocus required value={email} name="email" type="email" placeholder="Enter your email address" onChange={({target: {value}})=> setEmail(value)} />
-                </div>
-            </div>}
             <div className="delivery-address">
                 <div className='label'>
                     Delivery Setup
@@ -327,6 +320,14 @@ const CheckoutPage = ({onClose})=>{
                     </div>
                 </div>
             </div>
+            {isAuth ? <></> :<div className="email-setup">
+                <div className='label'>
+                    Email Address
+                </div>
+                <div className="email-input">
+                    <input autoFocus required value={email} name="email" type="email" placeholder="Enter your email address" onChange={({target: {value}})=> setEmail(value)} />
+                </div>
+            </div>}
         </div>
         <div className="footer">
             <button type="submit" className="submit-btn" style={{marginRight: 0}}>Accept Checkout</button>

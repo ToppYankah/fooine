@@ -12,6 +12,8 @@ import ProfilePopup from '../components/profile_popup';
 import QuickCartView from '../components/quick_cart_view';
 import GalleryViewSection from '../components/gallery-view-section';
 import '../css/home.css';
+import DesktopNotifications from '../components/notifications';
+import ErrorPopup from '../components/error-popup';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -44,13 +46,15 @@ const HomePage = () => {
                     <GalleryViewSection />
                 </div>
                 <QuickCartView />
+                <ErrorPopup />
+                <DesktopNotifications />
                 <Route path="/login">
                     <LoginForm />
                 </Route>
                 <Route path="/signup">
                     <SignupForm />
                 </Route>
-                <Route path="/cart">
+                <Route path="/watchlist">
                     <CartCheckoutPopup />
                 </Route>
                 <Route path="/profile">
