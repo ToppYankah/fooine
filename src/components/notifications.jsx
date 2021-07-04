@@ -52,7 +52,7 @@ const DesktopNotifications = () => {
         <div className={`notifications ${holdOn || show ? "show" : ""}`}>
             <div onClick={toggleShow} className="bubble-btn">
                 <FaBell size={18} color="#222" />
-                <div className="tag">{notifications.length}</div>
+                {notifications.length < 1 ? <></> : <div className="tag">{notifications.length}</div>}
             </div>
             {holdOn ? <div className="notification-list">
                 <header>

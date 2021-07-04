@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ProductsProvider from './providers/productProvider';
 import AuthProvider from './providers/authProvider';
-import CartProvider from './providers/cartProvider';
+import WatchlistProvider from './providers/watchlistProvider';
 import NotificationProvider from './providers/notificationProvider';
 import ErrorProvider from './providers/errorProvider';
 
@@ -15,9 +15,9 @@ ReactDOM.render(
       <AuthProvider>
         <NotificationProvider>
           <ProductsProvider>
-            <CartProvider>
+            <WatchlistProvider>
                 <App />
-            </CartProvider>
+            </WatchlistProvider>
           </ProductsProvider>
         </NotificationProvider>
       </AuthProvider>

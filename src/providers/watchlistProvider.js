@@ -1,39 +1,38 @@
 import React, { useState, useContext } from 'react';
-import api from '../api';
 import firebase from '../firebase';
 
-const CartContext = React.createContext();
+const WatchlistContext = React.createContext();
 
-export function useCart() {
-    return useContext(CartContext);
+export function useWatchlist() {
+    return useContext(WatchlistContext);
 }
 
-function CartProvider({ children }) {
-    const [cart, setCart] = useState([]);
+function WatchlistProvider({ children }) {
+    const [watchlist, setWatchlist] = useState([]);
     const [checkOut, setCheckOut] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const cartRef = firebase.firestore().collection('carts');
 
-    const getCart = (key)=>{
+    const getWatchlist = (key)=>{
         setLoading(true);
         if(key){
             cartRef.doc(key).onSnapshot(snapshot=>{
                 if(snapshot.data()){
-                    setCart(()=> snapshot.data().cart || [])
-                    setCheckOut(()=> snapshot.data().cart || [])
+                    setWatchlist(()=> snapshot.data().watchlist || [])
+                    setCheckOut(()=> snapshot.data().watchlist || [])
                 }
             })
         }
     }
 
-    const addToCart = (key, itemId)=>{
+    const addToWatchlist = (key, itemId)=>{
         setLoading(true);
-        if(itemId != null && !cart.includes(itemId)){
-            const newCart = [...cart, itemId];
-            cartRef.doc(key).set({cart: newCart})
+        if(itemId != null && !watchlist.includes(itemId)){
+            const newCart = [...watchlist, itemId];
+            cartRef.doc(key).set({watchlist: newCart})
             .then(_=>{
-                setCart(newCart.map(item => item));
+                setWatchlist(newCart.map(item => item));
                 setCheckOut([...checkOut, itemId])
                 setLoading(false);
             })
@@ -44,13 +43,13 @@ function CartProvider({ children }) {
         }
     }
 
-    const removeFromCart = (key, itemId)=>{
+    const removeFromWatchlist = (key, itemId)=>{
         setLoading(true);
-        if(itemId && cart.includes(itemId) && cart.length > 0){
-            const newCart = cart.filter(id=> id !== itemId);
-            cartRef.doc(key).set({cart: newCart})
+        if(itemId && watchlist.includes(itemId) && watchlist.length > 0){
+            const newCart = watchlist.filter(id=> id !== itemId);
+            cartRef.doc(key).set({watchlist: newCart})
             .then(_=>{
-                setCart(newCart.map(item=> item));
+                setWatchlist(newCart.map(item=> item));
                 setCheckOut(checkOut.filter(item=> item !== itemId));
                 setLoading(false);
             })
@@ -73,28 +72,28 @@ function CartProvider({ children }) {
     }
 
     const clearCheckedOut = (key)=>{
-        // remove checkedout cart items
-        const newCart = cart.filter(id=> !checkOut.includes(id));
+        // remove checkedout watchlist items
+        const newCart = watchlist.filter(id=> !checkOut.includes(id));
         cartRef.doc(key)
-        .update({cart: [...newCart]})
+        .update({watchlist: [...newCart]})
         .then(_=>{
             setCheckOut([]);
-            setCart([...newCart]);
+            setWatchlist([...newCart]);
         }).catch(error=> {
             console.log(error);
         })
     }
 
     return (
-        <CartContext.Provider value={{
-            cart, loading, checkOut,
-            addToCart, removeFromCart, 
+        <WatchlistContext.Provider value={{
+            watchlist, loading, checkOut,
+            addToWatchlist, removeFromWatchlist, 
             removeFromCheckout, addToCheckout,
-            clearCheckedOut, getCart
+            clearCheckedOut, getWatchlist
         }}>
             {children}
-        </CartContext.Provider>
+        </WatchlistContext.Provider>
     )
 }
 
-export default CartProvider;
+export default WatchlistProvider;

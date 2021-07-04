@@ -1,7 +1,6 @@
 import React from 'react';
 import Icon from 'react-eva-icons';
 
-
 const InputBox = ({name, icon, placeholder, type, value="", onChange})=>{
     return <div className="input-box">
         <Icon name={icon} fill='#777' size="medium" />
@@ -27,6 +26,11 @@ const InputBox = ({name, icon, placeholder, type, value="", onChange})=>{
                 background: transparent;
                 outline: none;
                 border-left: 1px solid #dfdfdf;
+                font-size: 12px;
+            }
+
+            .input-box input::-webkit-input-placeholder{
+                font-size: 12px;
             }
         `}</style>
     </div>

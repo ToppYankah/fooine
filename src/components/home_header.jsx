@@ -82,7 +82,7 @@ const HomeHeader = ({onSearch}) => {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 14px;
+                    font-size: 12px;
                     font-family: var(--font-bold);
                     color: #ccc;
                 }

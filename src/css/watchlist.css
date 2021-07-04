@@ -1,19 +1,19 @@
-.cart-popup {
+.watchlist-popup {
   position: fixed;
   display: flex;
   flex-direction: row-reverse;
   z-index: 10;
 }
 
-.cart-popup,
-.cart-popup .overlay {
+.watchlist-popup,
+.watchlist-popup .overlay {
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
 }
 
-.cart-popup .overlay {
+.watchlist-popup .overlay {
   position: absolute;
   background-color: #0000005a;
   backdrop-filter: blur(1px);
@@ -21,7 +21,7 @@
   cursor: pointer;
 }
 
-.cart-popup .inner {
+.watchlist-popup .inner {
   max-width: 500px;
   width: 100%;
   background: white;
@@ -31,7 +31,7 @@
   --padding-x: 5%;
 }
 
-.cart-popup .inner .header {
+.watchlist-popup .inner .header {
   padding: 15px var(--padding-x);
   border-bottom: 1px solid #eee;
   font-size: 15px;
@@ -41,7 +41,7 @@
   justify-content: space-between;
 }
 
-.cart-popup .inner .header .close-btn {
+.watchlist-popup .inner .header .close-btn {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -56,31 +56,31 @@
 }
 
 .checkout-page,
-.cart-page {
+.watchlist-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-.cart-page .body,
+.watchlist-page .body,
 .checkout-page .body {
   flex: 1;
   overflow: auto;
 }
 
-.cart-page .body::-webkit-scrollbar,
+.watchlist-page .body::-webkit-scrollbar,
 .checkout-page .body::-webkit-scrollbar {
   width: 5px;
   background: transparent;
 }
-.cart-page .body::-webkit-scrollbar-thumb,
+.watchlist-page .body::-webkit-scrollbar-thumb,
 .checkout-page .body::-webkit-scrollbar-thumb {
   width: 5px;
   background: #ddd;
   border-radius: 10px;
 }
 
-.cart-page .footer,
+.watchlist-page .footer,
 .checkout-page .footer {
   padding: 20px var(--padding-x);
   border-top: 1px solid #eee;
@@ -88,7 +88,7 @@
   align-items: center;
 }
 
-.cart-page .footer .submit-btn,
+.watchlist-page .footer .submit-btn,
 .checkout-page .footer .submit-btn {
   flex: 1;
   margin-right: 10%;
@@ -96,17 +96,17 @@
   font-size: 14px;
 }
 
-.cart-page .footer .price-tally {
+.watchlist-page .footer .price-tally {
   display: flex;
   align-items: flex-end;
   color: var(--dark-color);
 }
 
-.cart-page .footer .price-tally b {
+.watchlist-page .footer .price-tally b {
   font-size: 15px;
   margin-right: 5px;
 }
-.cart-page .footer .price-tally h3 {
+.watchlist-page .footer .price-tally h3 {
   font-size: 25px;
   margin-right: 5px;
   line-height: 25px;
