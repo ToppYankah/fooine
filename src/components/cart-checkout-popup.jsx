@@ -1,15 +1,14 @@
-import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
+import { FaEyeSlash } from '@meronex/icons/fa';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { usePaystackPayment } from 'react-paystack';
 import { Route, Link, useHistory } from 'react-router-dom';
-import '../css/cart.css';
+import '../css/watchlist.css';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
-import { useCart } from '../providers/cartProvider';
-import { useProducts, getStatus } from '../providers/productProvider';
+import { useWatchlist } from '../providers/watchlistProvider';
+import { useProducts } from '../providers/productProvider';
 import EmptyView from './empty_view';
-import InputBox from './input_box';
 
 const regions = [
     "Ahafo", "Ashanti", "Bono", "Bono East", "Central", "Eastern", "Greater Accra", "North East", "Northern", "Oti", "Savannah", "Upper East", "Upper West", "Volta", "Western", "Western North"
@@ -29,26 +28,26 @@ const CartCheckoutPopup = () => {
     }
 
     return (
-        <div className="cart-popup">
+        <div className="watchlist-popup">
             <div className="overlay" onClick={handleClose}></div>
             <div className="inner">
                 <Route exact path="/watchlist/checkout">
                     <CheckoutPage onClose={handleGoBack} />
                 </Route>
                 <Route exact path="/watchlist">
-                    <CartPage onClose={handleGoBack} />
+                    <WatchlistPage onClose={handleGoBack} />
                 </Route>
             </div>
         </div>
     );
 }
 
-const CartPage = ({onClose})=>{
+const WatchlistPage = ({onClose})=>{
      useEffect(() => {
         document.body.style.overflow = "hidden";
     }, []);
 
-    const {cart, checkOut} = useCart();
+    const {watchlist, checkOut} = useWatchlist();
     const {getProductById} = useProducts();
 
     function getCheckoutTally(){
@@ -60,18 +59,18 @@ const CartPage = ({onClose})=>{
         return output;
     }
 
-    return <div className="cart-page">
+    return <div className="watchlist-page">
         <div className="header">
             <h3>My WatchList</h3>
             <div onClick={onClose} className="close-btn">{'x'}</div>
         </div>
         <div className="body">
-            {cart.length < 1 ? 
+            {watchlist.length < 1 ? 
             <EmptyView message="Your watchlist is Empty" icon={<FaEyeSlash size={80} color="#eee" />}/> : 
-            cart.map((itemId, id) => <CartItem key={id} item={getProductById(itemId)} />
+            watchlist.map((itemId, id) => <CartItem key={id} item={getProductById(itemId)} />
             )}
         </div>
-        {cart.length > 0 && checkOut.length > 0 ? <div className="footer">
+        {watchlist.length > 0 && checkOut.length > 0 ? <div className="footer">
             <Link to="/watchlist/checkout" className="submit-btn">Proceed to checkout</Link>
             <p className="price-tally"><b>GHC</b><h3>{getCheckoutTally().toFixed(2)}</h3></p>
         </div> : <></>}
@@ -79,7 +78,7 @@ const CartPage = ({onClose})=>{
 }
 
 const CartItem = ({item})=>{
-    const {removeFromCheckout, addToCheckout, removeFromCart, checkOut} = useCart();
+    const {removeFromCheckout, addToCheckout, removeFromCart, checkOut} = useWatchlist();
     const {user, isAuth,} = useAuth();
     const [token] = useToken();
 
@@ -185,7 +184,7 @@ const CartItem = ({item})=>{
 const CheckoutPage = ({onClose})=>{
     const [deliveryId, setDeliveryId] = useState(0);
     const [deliveryAddress, setDeliveryAddress] = useState("");
-    const {clearCheckedOut, checkOut} = useCart();
+    const {clearCheckedOut, checkOut} = useWatchlist();
     const [deliveryFee, setDeliveryFee] = useState(0)
     const {markProductsAsSold, getProductById} = useProducts();
     const [totalPayment, setTotalPayment] = useState(getCheckoutTally() + deliveryFee);
@@ -208,7 +207,7 @@ const CheckoutPage = ({onClose})=>{
 
     useEffect(() => {
         if(checkOut.length < 1){
-            history.replace('/cart');
+            history.replace('/watchlist');
         }
         document.body.style.overflow = "hidden";
     }, []);

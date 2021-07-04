@@ -4,12 +4,12 @@ import { Link, useHistory } from 'react-router-dom';
 import Icon from 'react-eva-icons/dist/Icon';
 import { useAuth } from '../providers/authProvider';
 import Loader from './simple_loader';
-import { useCart } from '../providers/cartProvider';
-import { AiOutlineLogout, AiOutlineShoppingCart, AiOutlineStar, AiOutlineUser, AiOutlinePaperClip, AiOutlineFileText, AiOutlineInfoCircle } from '@meronex/icons/ai';
+import { useWatchlist } from '../providers/watchlistProvider';
+import { AiOutlineLogout, AiOutlineShoppingCart, AiOutlineStar, AiOutlineUser, AiOutlineFileText, AiOutlineInfoCircle } from '@meronex/icons/ai';
 
 const ProfilePopup = () => {
     const {user, isAuth, logout, loading} = useAuth();
-    const {cart} = useCart();
+    const {watchlist} = useWatchlist();
     const history = useHistory();
 
     useEffect(() => {
@@ -53,11 +53,11 @@ const ProfilePopup = () => {
                             <b>Account</b>
                         </p>
                     </Link>
-                    <Link className="option" to="/cart">
+                    <Link className="option" to="/watchlist">
                         <p>
                             <AiOutlineShoppingCart size={20} color="#555" />
                             <b>My Cart</b>
-                            <span className="tag">{cart.length}</span>
+                            <span className="tag">{watchlist.length}</span>
                         </p>
                     </Link>
                     <Link className="option" to="/profile/option">

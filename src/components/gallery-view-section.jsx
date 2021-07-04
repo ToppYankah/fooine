@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
-import { useCart } from '../providers/cartProvider';
+import { useWatchlist } from '../providers/watchlistProvider';
 import { getStatus, useProducts } from '../providers/productProvider';
 import CategoryMenu from './category_menu';
-import { AiOutlineHeart, AiFillHeart, AiOutlineStar, AiFillStar, AiOutlineShareAlt } from '@meronex/icons/ai';
+import { AiOutlineHeart, AiFillHeart, AiOutlineStar, AiFillStar } from '@meronex/icons/ai';
 import { BsStopwatchFill, BsStopwatch } from '@meronex/icons/bs';
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
@@ -12,7 +12,7 @@ import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
 
 const GalleryViewSection = () => {
     const {products: _products, categories, getProducts, like, addToWishList, holdProduct, unholdProduct } = useProducts();
-    const {cart, addToCart, removeFromCart} = useCart();
+    const {watchlist, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const [token] = useToken();
     const {user, isAuth} = useAuth();
     const [products, setProducts] = useState(_products.map(item=> item));
@@ -53,11 +53,11 @@ const GalleryViewSection = () => {
     }
 
     const handleAddToCart = (productId)=>{
-        if(cart.includes(productId)){
-           return removeFromCart(isAuth ? user.id : token, productId);
+        if(watchlist.includes(productId)){
+           return removeFromWatchlist(isAuth ? user.id : token, productId);
         }
 
-        addToCart(isAuth ? user.id : token, productId);
+        addToWatchlist(isAuth ? user.id : token, productId);
     }
 
     return (
@@ -90,9 +90,9 @@ const GalleryViewSection = () => {
                                 <div className="details">
                                     <h3>{product.name}</h3>
                                 </div>
-                                {product.status === 2 ? <></> : <div className="add-cart">
+                                {product.status === 2 ? <></> : <div className="add-watchlist">
                                     <p><small>GHC</small><big>{parseFloat(product.price).toFixed(2)}</big></p>
-                                    {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${cart.includes(product.id) ? "" : "active"}`}>{cart.includes(product.id) ? 
+                                    {held ? <></> :<button onClick={()=>handleAddToCart(product.id)} className={`btn ${watchlist.includes(product.id) ? "" : "active"}`}>{watchlist.includes(product.id) ? 
                                     (<><FaEyeSlash style={{marginRight: 5}} size={18} color="#222" /><span>Unwatch</span></>) : 
                                     (<><FaEye style={{marginRight: 5}} size={18} color="#fff" /><span>Watch</span></>)}</button>}
                                 </div>}
@@ -265,14 +265,14 @@ const GalleryViewSection = () => {
                     padding: 20px 5%;
                     color: #fff;
                 }
-                .gallery-view .item .content .add-cart{
+                .gallery-view .item .content .add-watchlist{
                     padding: 20px 5%;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     color: #fff;
                 }
-                .gallery-view .item .content .add-cart button{
+                .gallery-view .item .content .add-watchlist button{
                     padding: 10px 20px;
                     border-radius: 20px;
                     border: none;
@@ -282,7 +282,7 @@ const GalleryViewSection = () => {
                     display: flex;
                     align-items: center;
                 }
-                .gallery-view .item .content .add-cart button.active{
+                .gallery-view .item .content .add-watchlist button.active{
                     background: var(--dark-color);
                     color: #fff;
                 }

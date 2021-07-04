@@ -8,7 +8,7 @@ import HomePage from "./pages/homepage";
 import AddProdPage from "./pages/addprod";
 import { useProducts } from "./providers/productProvider";
 import { useToken } from "./hooks/token";
-import { useCart } from "./providers/cartProvider";
+import { useWatchlist } from "./providers/watchlistProvider";
 import { useAuth } from "./providers/authProvider";
 import Loader from "./components/simple_loader";
 
@@ -16,11 +16,11 @@ function App() {
   const {fetchProducts, loading: productsLoading} = useProducts()
   const {user, isAuth, loading: authLoading} = useAuth();
   const [token] = useToken();
-  const {getCart} = useCart();
+  const {getWatchlist} = useWatchlist();
 
   useEffect(() => {
       fetchProducts();
-      getCart(isAuth ? user.id : token);
+      getWatchlist(isAuth ? user.id : token);
   }, [isAuth]);
 
   return (

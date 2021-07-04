@@ -4,14 +4,14 @@ import Icon from 'react-eva-icons/dist/Icon';
 import { useParams } from 'react-router-dom';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
-import { useCart } from '../providers/cartProvider';
+import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts, getStatus } from '../providers/productProvider';
 import Loader from './simple_loader';
 
 const ProductViewPage = () => {
     const params = useParams();
     const {products, comment, fetchProductById, getProductById, holdProduct, unholdProduct} = useProducts();
-    const {cart, addToCart, removeFromCart} = useCart();
+    const {watchlist, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const {isAuth, user} = useAuth();
     const [token] = useToken();
     const [inCart, setInCart] = useState(false);
@@ -24,8 +24,8 @@ const ProductViewPage = () => {
         }else{
             setProduct(await fetchProductById(params.id));
         }
-        setInCart(cart.includes(params.id));
-    }, [cart, products]);
+        setInCart(watchlist.includes(params.id));
+    }, [watchlist, products]);
 
     const handleComment = (e)=>{
         e.preventDefault();
@@ -70,7 +70,7 @@ const ProductViewPage = () => {
                             <FaStopwatch size={18} color="#fff" />
                             <span>{product.heldBy !== "" ? "Unhold Item" : "Hold Item"}</span>
                         </button>}
-                        {product.status !== 2 ? <button onClick={()=> inCart ? removeFromCart(isAuth ? user.id : token, product.id) : addToCart(isAuth ? user.id : token, product.id)} id="add-to-cart">
+                        {product.status !== 2 ? <button onClick={()=> inCart ? removeFromWatchlist(isAuth ? user.id : token, product.id) : addToWatchlist(isAuth ? user.id : token, product.id)} id="add-to-watchlist">
                             {inCart ? <FaEyeSlash size={20} color="#fff" /> : <FaEye size={20} color="#fff" />}
                             <span>{inCart ? 'Unwatch Item' : 'Watch Item'}</span>
                         </button> : <></>}
@@ -256,7 +256,7 @@ const ProductViewPage = () => {
                     align-items: center;
                 }
 
-                #hold, #add-to-cart{
+                #hold, #add-to-watchlist{
                     flex: 1;
                     text-align: center;
                     padding: 10px;
@@ -280,7 +280,7 @@ const ProductViewPage = () => {
                     border: 1px solid #222;
                     margin-right: 20px;
                 }
-                #add-to-cart{
+                #add-to-watchlist{
                     background: var(--dark-color);
                 }
 

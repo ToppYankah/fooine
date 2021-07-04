@@ -3,13 +3,13 @@ import Icon from 'react-eva-icons/dist/Icon';
 import { Link } from 'react-router-dom';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
-import { useCart } from '../providers/cartProvider';
+import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts } from '../providers/productProvider';
 import EmptyView from './empty_view';
 
 const QuickCartView = () => {
     const {getProductById} = useProducts();
-    const {removeFromCart, checkOut} = useCart();
+    const {removeFromWatchlist, checkOut} = useWatchlist();
     const {isAuth, user} = useAuth();
     const [token] = useToken();
     const [open, setOpen] = useState(true);
@@ -33,16 +33,16 @@ const QuickCartView = () => {
     }
 
     return (
-        <div className={`quick-cart-view ${open ? "show" : ""}`}>
+        <div className={`quick-watchlist-view ${open ? "show" : ""}`}>
             <div onClick={()=> setOpen(!open)} className="toggler">{open ? "Hide WatchList" : "Show WatchList"}</div>
             <div className="body-wrap">
-                <div className="cart-list">
+                <div className="watchlist-list">
                     {checkOut.map((item, index)=> 
                         <div key={index} className="item">
                             <Link to={"/preview-product/" + item}>
-                                <img src={getProductById(item).imageUrl} alt="cart item" />
+                                <img src={getProductById(item).imageUrl} alt="watchlist item" />
                             </Link>
-                            <div onClick={()=> removeFromCart(isAuth ? user.id : token, item)} className="remove-btn">
+                            <div onClick={()=> removeFromWatchlist(isAuth ? user.id : token, item)} className="remove-btn">
                                 <Icon name="close-outline" fill="white" size="small" />
                             </div>
                         </div>
@@ -55,7 +55,7 @@ const QuickCartView = () => {
                 </div> : <></>}
             </div>
             <style jsx>{`
-                .quick-cart-view{
+                .quick-watchlist-view{
                     position: fixed;
                     bottom: calc(-130px + 50px);
                     right: 0;
@@ -67,7 +67,7 @@ const QuickCartView = () => {
                     z-index: 10;
                 }
 
-                .quick-cart-view .toggler{
+                .quick-watchlist-view .toggler{
                     position: absolute;
                     bottom: 100%;
                     left: 50%;
@@ -82,17 +82,17 @@ const QuickCartView = () => {
                     letter-spacing: 1px;
                 }
 
-                .quick-cart-view.show{
+                .quick-watchlist-view.show{
                     bottom: 0;
                 }
 
-                .quick-cart-view .body-wrap{
+                .quick-watchlist-view .body-wrap{
                     display: flex;
                     align-items: center;
                     padding: 0 5%;
                 }
 
-                .quick-cart-view .cart-list{
+                .quick-watchlist-view .watchlist-list{
                     min-height: 60px;
                     display: flex;
                     align-items: center;
@@ -101,19 +101,19 @@ const QuickCartView = () => {
                     margin-right: 10px;
                     padding-top: 5px;
                 }
-                .quick-cart-view .cart-list::-webkit-scrollbar{
+                .quick-watchlist-view .watchlist-list::-webkit-scrollbar{
                     display: none;
                 }
 
-                .cart-list .item{
+                .watchlist-list .item{
                     animation: bounce .3s cubic-bezier(0.36, 0.63, 0, 1.32);
                 }
 
-                .cart-list .item:not(:last-child){
+                .watchlist-list .item:not(:last-child){
                     margin-right: 20px;
                 }
 
-                .cart-list .item .remove-btn{
+                .watchlist-list .item .remove-btn{
                     position: absolute;
                     top: -5px;
                     right: -5px;
@@ -128,7 +128,7 @@ const QuickCartView = () => {
                     cursor: pointer;
                 }
 
-                .cart-list .item img{
+                .watchlist-list .item img{
                     width: 55px;
                     height: 55px;
                     object-fit: cover;
@@ -148,14 +148,14 @@ const QuickCartView = () => {
                     }
                 }
 
-                .quick-cart-view .btn{
+                .quick-watchlist-view .btn{
                     padding: 10px 20px;
                     background: var(--dark-color);
                     color: #fff;
                     border-radius: 10px;
                     font-size: 13px;
                 }
-                .quick-cart-view .checkout-btn-box p{
+                .quick-watchlist-view .checkout-btn-box p{
                     margin-bottom: 10px;
                     font-weight: bolder;
                     text-align: center;

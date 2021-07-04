@@ -4,7 +4,7 @@ import Icon from 'react-eva-icons';
 import { Link } from 'react-router-dom';
 import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
-import { useCart } from '../providers/cartProvider';
+import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts, getStatus } from '../providers/productProvider';
 // import Loader from './simple_loader';
 
@@ -12,7 +12,7 @@ const LiveFeedCard = ({feed}) => {
     const {user, isAuth} = useAuth();
     const [token] = useToken();
     const {products, like, addToWishList, share, holdProduct, unholdProduct} = useProducts();
-    const {cart, addToCart, removeFromCart} = useCart();
+    const {watchlist, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const productId = feed.id;
     const [heldByMe, setHeldByMe] = useState(false);
     const [held, setHeld] = useState(false);
@@ -33,10 +33,10 @@ const LiveFeedCard = ({feed}) => {
     }
 
     const handleAddToCart = ()=>{
-        if(cart.includes(feed.id)){
-            removeFromCart(isAuth ? user.id : token, productId);
+        if(watchlist.includes(feed.id)){
+            removeFromWatchlist(isAuth ? user.id : token, productId);
         }else{
-            addToCart(isAuth ? user.id : token, productId);
+            addToWatchlist(isAuth ? user.id : token, productId);
         }
     }
 
@@ -64,16 +64,16 @@ const LiveFeedCard = ({feed}) => {
                 </Link>
                 {feed.status !== 2 ? 
                 <div className="add-section">
-                    {held ? <></> :<label htmlFor={feed.id} className="add-to-cart">
-                        <input type="checkbox" checked={cart.includes(feed.id)} name="add-cart" className="add-cart" id={feed.id} onChange={handleAddToCart} />
+                    {held ? <></> :<label htmlFor={feed.id} className="add-to-watchlist">
+                        <input type="checkbox" checked={watchlist.includes(feed.id)} name="add-watchlist" className="add-watchlist" id={feed.id} onChange={handleAddToCart} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
-                        <span>{cart.includes(feed.id) ? "Unwatch" : "Watch"}</span>
+                        <span>{watchlist.includes(feed.id) ? "Unwatch" : "Watch"}</span>
                     </label>}
                     {held && !heldByMe ? 
                     <></> : <label htmlFor={`${feed.id}hold`} className="hold">
-                        <input type="checkbox" checked={heldByMe} name="add-cart" className="add-cart" id={`${feed.id}hold`} onChange={handleHoldItem} />
+                        <input type="checkbox" checked={heldByMe} name="add-watchlist" className="add-watchlist" id={`${feed.id}hold`} onChange={handleHoldItem} />
                         <div className="check-box">
                             <Icon name="checkmark-outline" fill="#fff" size="small"/>
                         </div>
@@ -106,11 +106,11 @@ const LiveFeedCard = ({feed}) => {
                     display: flex;
                     cursor: pointer;
                 }
-                .feed-card .add-cart{display: none}
-                .feed-card .add-cart:checked + .check-box{
+                .feed-card .add-watchlist{display: none}
+                .feed-card .add-watchlist:checked + .check-box{
                     background: var(--dark-color)
                 }
-                .feed-card .add-cart:checked + .check-box > *{
+                .feed-card .add-watchlist:checked + .check-box > *{
                     display: block;
                 }
                 .feed-card .add-section .check-box{
@@ -203,7 +203,7 @@ const LiveFeedCard = ({feed}) => {
 
                 .feed-card .details{
                     position: absolute;
-                    bottom: 10%;
+                    bottom: 0;
                     right: 0;
                     min-width: 60%;
                     max-width: 70%;
