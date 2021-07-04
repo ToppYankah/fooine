@@ -11,10 +11,10 @@ import Loader from './simple_loader';
 const ProductViewPage = () => {
     const params = useParams();
     const {products, comment, fetchProductById, getProductById, holdProduct, unholdProduct} = useProducts();
-    const {watchlist, addToWatchlist, removeFromWatchlist} = useWatchlist();
+    const {watchlist, isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
     const {isAuth, user} = useAuth();
     const [token] = useToken();
-    const [inCart, setInCart] = useState(false);
+    const [watching, setWatching] = useState(false);
     const [commentMsg, setCommentMsg] = useState("");
     const [product, setProduct] = useState();
 
@@ -24,7 +24,7 @@ const ProductViewPage = () => {
         }else{
             setProduct(await fetchProductById(params.id));
         }
-        setInCart(watchlist.includes(params.id));
+        setWatching(isWatching(params.id));
     }, [watchlist, products]);
 
     const handleComment = (e)=>{
@@ -70,9 +70,9 @@ const ProductViewPage = () => {
                             <FaStopwatch size={18} color="#fff" />
                             <span>{product.heldBy !== "" ? "Unhold Item" : "Hold Item"}</span>
                         </button>}
-                        {product.status !== 2 ? <button onClick={()=> inCart ? removeFromWatchlist(isAuth ? user.id : token, product.id) : addToWatchlist(isAuth ? user.id : token, product.id)} id="add-to-watchlist">
-                            {inCart ? <FaEyeSlash size={20} color="#fff" /> : <FaEye size={20} color="#fff" />}
-                            <span>{inCart ? 'Unwatch Item' : 'Watch Item'}</span>
+                        {product.status !== 2 ? <button onClick={()=> watching ? removeFromWatchlist(product.id) : addToWatchlist(isAuth ? user.id : token, product.id)} id="add-to-watchlist">
+                            {watching ? <FaEyeSlash size={20} color="#fff" /> : <FaEye size={20} color="#fff" />}
+                            <span>{watching ? 'Unwatch Item' : 'Watch Item'}</span>
                         </button> : <></>}
                     </div>
                     {/* <div className="mute-heading">

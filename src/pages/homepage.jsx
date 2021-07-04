@@ -6,7 +6,7 @@ import LoginForm from '../components/login_form';
 import { useProducts } from '../providers/productProvider';
 import { Route, useHistory } from "react-router-dom";
 import SignupForm from '../components/signup_form';
-import CartCheckoutPopup from '../components/cart-checkout-popup';
+import CheckoutPopup from '../components/cart-checkout-popup';
 import ProductViewPage from '../components/product_view_page';
 import ProfilePopup from '../components/profile_popup';
 import QuickCartView from '../components/quick_cart_view';
@@ -54,7 +54,7 @@ const HomePage = () => {
                     <SignupForm />
                 </Route>
                 <Route path="/watchlist">
-                    <CartCheckoutPopup />
+                    <CheckoutPopup />
                 </Route>
                 <Route path="/profile">
                     <ProfilePopup />
