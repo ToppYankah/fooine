@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { Link } from 'react-router-dom';
-import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts } from '../providers/productProvider';
@@ -10,8 +9,7 @@ import EmptyView from './empty_view';
 const QuickWatchlistView = () => {
     const {getProductById} = useProducts();
     const {removeFromWatchlist, watchlist, checkOut} = useWatchlist();
-    const {isAuth, user} = useAuth();
-    const [token] = useToken();
+    const {user} = useAuth();
     const [open, setOpen] = useState(true);
     const [amount, setAmount] = useState(getCheckoutTally())
 
@@ -40,7 +38,7 @@ const QuickWatchlistView = () => {
                     {watchlist.map((item, index)=> {
                         const product = getProductById(item.productId);
                         const held = product.status === 1;
-                        const heldByMe = product.heldBy === (isAuth ? user.id : token);
+                        const heldByMe = product.heldBy === user.uid;
                         return <div key={index} className={`item ${ (held && !heldByMe) ? "held" : ""}`}>
                             <Link to={"/preview-product/" + product.id}>
                                 <img src={product.imageUrl} alt="watchlist item" />

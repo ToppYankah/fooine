@@ -8,7 +8,7 @@ import { Link, useHistory } from 'react-router-dom';
 const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const {login, isAuth, loading} = useAuth()
+    const {user, login, loading} = useAuth()
     const history = useHistory();
 
     useEffect(() => {
@@ -16,9 +16,9 @@ const LoginForm = () => {
     }, []);
 
     useEffect(() => {
-        if(isAuth)
+        if(!user.isAnonymous)
             handleClose();
-    }, [isAuth]);
+    }, [user]);
 
     const handleClose = ()=>{
         document.body.style.overflow = "auto";

@@ -12,17 +12,17 @@ const SignupForm = () => {
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [c_password, setCPassword] = useState("");
-    const {signup, loading, isAuth} = useAuth();
+    const {user, signup, loading} = useAuth();
     const history = useHistory()
 
     useEffect(() => {
         document.body.style.overflow = "hidden";
     }, []);
 
-     useEffect(() => {
-        if(isAuth)
+    useEffect(() => {
+        if(!user.isAnonymous)
             handleClose();
-    }, [isAuth]);
+    }, [user]);
 
     const handleClose = ()=>{
         document.body.style.overflow = "auto";

@@ -1,8 +1,7 @@
-import moment from 'moment';
+// import moment from 'moment';
 import React, { useState, useContext, useEffect } from 'react';
 import { v4 } from 'uuid';
 import firebase from '../firebase';
-import { useToken, useAuthToken } from '../hooks/token';
 import { useError } from './errorProvider';
 import {useAuth} from './authProvider';
 
@@ -15,9 +14,7 @@ export function useNotification() {
 function NotificationProvider({ children }) {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [token] = useToken();
-    const [authToken] = useAuthToken();
-    const {isAuth} = useAuth();
+    const {user} = useAuth();
     const {createError} = useError();
     const [unread, setUnread] = useState([]);
 
@@ -27,26 +24,27 @@ function NotificationProvider({ children }) {
     const watchlistRef = store.collection('watchlist');
 
     useEffect(() => {
-        setLoading(true);
-        notificationsRef.where("to", "==", token || authToken).onSnapshot(snapChild=>{
-            console.log(snapChild.docs.map(doc=> doc.data()));
-            setNotifications(snapChild.docs.map(doc=> doc.data()).reverse() || notifications);
-            setUnread(snapChild.docs.filter(doc=> doc.data().read === false).map(item=> item.data()) || unread);
-            // on change/updated
-            snapChild.docChanges(item=>{
-                setNotifications(item.docs.map(doc=> doc.data()).reverse() || notifications);
+        if(user.uid){
+            setLoading(true);
+            notificationsRef.where("to", "==", user.uid).onSnapshot(snapChild=>{
+                setNotifications(snapChild.docs.map(doc=> doc.data()).reverse() || notifications);
                 setUnread(snapChild.docs.filter(doc=> doc.data().read === false).map(item=> item.data()) || unread);
+                // on change/updated
+                snapChild.docChanges(item=>{
+                    setNotifications(item.docs.map(doc=> doc.data()).reverse() || notifications);
+                    setUnread(snapChild.docs.filter(doc=> doc.data().read === false).map(item=> item.data()) || unread);
+                });
+                setLoading(false);
             });
-            setLoading(false);
-        });
-    }, []);
+        }
+    }, [user]);
 
     const notifyHold = (productId)=>{
         watchlistRef.where("productId", "==", productId).get()
         .then(result=> {
             const usersToNotify = result.docs.map(doc=> doc.data().userId);
-            usersToNotify.forEach(user=>{
-                const isMe = user === (isAuth ? authToken : token);
+            usersToNotify.forEach(userId=>{
+                const isMe = userId === user.uid;
                 if(!isMe){
                     const noteId = v4();
                     notificationsRef.doc(noteId).set({
@@ -54,7 +52,7 @@ function NotificationProvider({ children }) {
                         id: noteId,
                         message: "Someone is holding an item you are watching. Make sure to check your watchlist to verify.",
                         title: "Hold Alert",
-                        to: user,
+                        to: userId,
                         type: "HOLD_ALERT",
                         read: false
                     }).catch(({message})=>{
@@ -69,8 +67,8 @@ function NotificationProvider({ children }) {
         watchlistRef.where("productId", "==", productId).get()
         .then(result=> {
             const usersToNotify = result.docs.map(doc=> doc.data().userId);
-            usersToNotify.forEach(user=>{
-                const isMe = user === (isAuth ? authToken : token);
+            usersToNotify.forEach(userId=>{
+                const isMe = userId === user.uid;
                 if(!isMe){
                     const noteId = v4();
                     notificationsRef.doc(noteId).set({
@@ -78,7 +76,7 @@ function NotificationProvider({ children }) {
                         id: noteId,
                         message: "Someone just unheld an item you are watching. You have the chance to purchase now, don't waste this opportunity.",
                         title: "Chance Alert",
-                        to: user,
+                        to: userId,
                         type: "HOLD_ALERT",
                         read: false
                     }).catch(({message})=>{

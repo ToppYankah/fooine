@@ -2,7 +2,6 @@ import { FaEye, FaEyeSlash, FaStopwatch } from '@meronex/icons/fa';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-eva-icons/dist/Icon';
 import { useParams } from 'react-router-dom';
-import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts, getStatus } from '../providers/productProvider';
@@ -12,8 +11,7 @@ const ProductViewPage = () => {
     const params = useParams();
     const {products, comment, fetchProductById, getProductById, holdProduct, unholdProduct} = useProducts();
     const {watchlist, isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
-    const {isAuth, user} = useAuth();
-    const [token] = useToken();
+    const {user} = useAuth();
     const [watching, setWatching] = useState(false);
     const [commentMsg, setCommentMsg] = useState("");
     const [product, setProduct] = useState();
@@ -30,7 +28,7 @@ const ProductViewPage = () => {
     const handleComment = (e)=>{
         e.preventDefault();
         if(commentMsg && commentMsg !== ""){
-            comment( isAuth ? user.name : "Unknown", commentMsg, product);
+            comment( user.isAnonymous ? "Anonymous" : user.displayName, commentMsg, product);
             setCommentMsg("");
         }
     }
@@ -66,11 +64,11 @@ const ProductViewPage = () => {
                         </div>               
                     </div>
                     <div className="purchase-actions">
-                        {product.heldBy !== "" && !(product.heldBy === (isAuth ? user.id : token)) ? <></> : <button onClick={()=> product.heldBy !== "" ? unholdProduct(isAuth ? user.id : token, product) : holdProduct(isAuth ? user.id : token, product)} id="hold">
+                        {product.heldBy !== "" && !(product.heldBy === user.uid) ? <></> : <button onClick={()=> product.heldBy !== "" ? unholdProduct(user.uid, product) : holdProduct(user.uid, product)} id="hold">
                             <FaStopwatch size={18} color="#fff" />
                             <span>{product.heldBy !== "" ? "Unhold Item" : "Hold Item"}</span>
                         </button>}
-                        {product.status !== 2 ? <button onClick={()=> watching ? removeFromWatchlist(product.id) : addToWatchlist(isAuth ? user.id : token, product.id)} id="add-to-watchlist">
+                        {product.status !== 2 ? <button onClick={()=> watching ? removeFromWatchlist(product.id) : addToWatchlist(user.uid, product.id)} id="add-to-watchlist">
                             {watching ? <FaEyeSlash size={20} color="#fff" /> : <FaEye size={20} color="#fff" />}
                             <span>{watching ? 'Unwatch Item' : 'Watch Item'}</span>
                         </button> : <></>}
@@ -124,6 +122,8 @@ const ProductViewPage = () => {
                     animation: scale-in .15s cubic-bezier(0.04, 1.12, 0.37, 1.15);
                     padding: 10px;
                     border-radius: 20px;
+                    overflow-x: hidden;
+                    overflow-y: scroll;
                 }
 
                 @media(max-width: 1000px){

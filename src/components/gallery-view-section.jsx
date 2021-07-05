@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useWatchlist } from '../providers/watchlistProvider';
 import { getStatus, useProducts } from '../providers/productProvider';
@@ -12,9 +11,8 @@ import { FaEye, FaEyeSlash } from '@meronex/icons/fa';
 
 const GalleryViewSection = () => {
     const {products: _products, categories, getProducts, like, addToWishList, holdProduct, unholdProduct } = useProducts();
-    const {watchlist, isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
-    const [token] = useToken();
-    const {user, isAuth} = useAuth();
+    const {isWatching, addToWatchlist, removeFromWatchlist} = useWatchlist();
+    const {user} = useAuth();
     const [products, setProducts] = useState(_products.map(item=> item));
     const [categoryFilter, setCategoryFilter] = useState("");
     const [prevShuffle, setPrevShuffle] = useState([]);
@@ -56,7 +54,7 @@ const GalleryViewSection = () => {
         if(isWatching(productId)){
            return removeFromWatchlist(productId);
         }
-        addToWatchlist(isAuth ? user.id : token, productId);
+        addToWatchlist(user.uid, productId);
     }
 
     return (
@@ -79,7 +77,7 @@ const GalleryViewSection = () => {
                 <section className="product-section">
                     <div className="grid">
                         {products.map(product=> {
-                            const heldByMe = product.heldBy === (isAuth ? user.id : token);
+                            const heldByMe = product.heldBy === (user.uid);
                             const held = product.heldBy !== "";
                         return <div key={product.id} className="item">
                             {held && <img className="held-img" src="/images/held-img.png"/>}
@@ -96,19 +94,19 @@ const GalleryViewSection = () => {
                                     (<><FaEye style={{marginRight: 5}} size={18} color="#fff" /><span>Watch</span></>)}</button>}
                                 </div>}
                                 <div className="actions">
-                                    <div onClick={()=> like(isAuth ? user.id : token, product)} className="act">
+                                    <div onClick={()=> like(user.uid, product)} className="act">
                                         <div className="tag">{product.likes.length}</div>
-                                        {product.likes.includes(isAuth ? user.id : token) ? <AiFillHeart size={20} color="red" /> : <AiOutlineHeart size={20} color="#fff" /> }
+                                        {product.likes.includes(user.uid) ? <AiFillHeart size={20} color="red" /> : <AiOutlineHeart size={20} color="#fff" /> }
                                     </div>
-                                    <div onClick={()=> addToWishList(isAuth ? user.id : token, product)} className="act">
+                                    <div onClick={()=> addToWishList(user.uid, product)} className="act">
                                         <div className="tag">{product.wishlist.length}</div>
-                                        {product.wishlist.includes(isAuth ? user.id : token) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
+                                        {product.wishlist.includes(user.uid) ? <AiFillStar size={20} color="#fff" /> : <AiOutlineStar size={20} color="#fff" />}
                                     </div>
                                     {(held && !heldByMe) || product.status === 2 ? 
                                     <></> : 
                                     <div onClick={()=> { heldByMe ? 
-                                        unholdProduct(isAuth ? user.id : token, product) : 
-                                        holdProduct(isAuth ? user.id : token, product)}} 
+                                        unholdProduct(user.uid, product) : 
+                                        holdProduct(user.uid, product)}} 
                                         className="act"
                                     >
                                         <div className="tag">{held ? "Unhold" : "Hold"}</div>

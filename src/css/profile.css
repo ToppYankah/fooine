@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: row-reverse;
   --space-x: 10%;
+  z-index: 5;
 }
 
 .profile_popup,
@@ -102,9 +103,9 @@
 }
 
 .content .option p {
-  padding: 20px var(--space-x);
+  padding: 15px var(--space-x);
   border-bottom: 1px solid #f9f9f9;
-  font-size: 14px;
+  font-size: 12px;
   transition: font-size 0.2s;
   color: #555;
   display: flex;
