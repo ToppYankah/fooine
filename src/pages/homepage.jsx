@@ -13,6 +13,7 @@ import GalleryViewSection from '../components/gallery-view-section';
 import '../css/home.css';
 import DesktopNotifications from '../components/notifications';
 import ErrorPopup from '../components/error-popup';
+import PrivateRoute from '../hooks/private_router';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -55,12 +56,10 @@ const HomePage = () => {
                 <Route path="/watchlist">
                     <CheckoutPopup />
                 </Route>
-                <Route path="/profile">
-                    <ProfilePopup />
-                </Route>
                 <Route path="/preview-product/:id">
                     <ProductViewPage />
                 </Route>
+                <PrivateRoute path="/profile" component={ProfilePopup} />
                 <ErrorPopup />
             </>
         </div>

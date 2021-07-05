@@ -7,11 +7,11 @@ import { useAuth } from '../providers/authProvider';
 
 const HomeHeader = ({onSearch}) => {
     const [authenticated, setAuthenticated] = useState(false);
-    const {isAuth} = useAuth();
+    const {user} = useAuth();
 
     useEffect(() => {
-        setAuthenticated(isAuth);
-    }, [isAuth]);
+        setAuthenticated(!user.isAnonymous);
+    }, [user]);
 
     const renderAuth = ()=>{
         return <>
@@ -19,7 +19,7 @@ const HomeHeader = ({onSearch}) => {
         <>
             <Link to='/profile' className='profile-button'>
                     <Icon name="person-outline" fill='#eee' size="medium" />
-                    <b style={{marginLeft: 5}}>Profile</b>
+                    <b style={{marginLeft: 5}}>My Profile</b>
             </Link>
         </> : 
         <>

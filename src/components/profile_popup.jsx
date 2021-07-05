@@ -8,19 +8,13 @@ import { useWatchlist } from '../providers/watchlistProvider';
 import { AiOutlineLogout, AiOutlineShoppingCart, AiOutlineStar, AiOutlineUser, AiOutlineFileText, AiOutlineInfoCircle } from '@meronex/icons/ai';
 
 const ProfilePopup = () => {
-    const {user, isAuth, logout, loading} = useAuth();
+    const {user, logout, loading} = useAuth();
     const {watchlist} = useWatchlist();
     const history = useHistory();
 
     useEffect(() => {
         document.body.style.overflow = "hidden";
     }, []);
-
-    useEffect(() => {
-       if(!isAuth){
-           handleClose();
-       }
-    }, [isAuth]);
 
     const handleClose = ()=>{
         document.body.style.overflow = "auto";
@@ -43,7 +37,7 @@ const ProfilePopup = () => {
                     <div className="profile-img">
                         <Icon name="person" size="xlarge" fill="#aaa" />
                     </div>
-                    <h3>{user.username}</h3>
+                    <h3>{user.displayName}</h3>
                     <p>{user.email}</p>
                 </div>
                 <div className="option-list">

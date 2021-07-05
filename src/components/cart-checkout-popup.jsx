@@ -4,7 +4,6 @@ import Icon from 'react-eva-icons/dist/Icon';
 import { usePaystackPayment } from 'react-paystack';
 import { Route, Link, useHistory } from 'react-router-dom';
 import '../css/watchlist.css';
-import { useToken } from '../hooks/token';
 import { useAuth } from '../providers/authProvider';
 import { useWatchlist } from '../providers/watchlistProvider';
 import { useProducts } from '../providers/productProvider';
@@ -80,12 +79,11 @@ const WatchlistPage = ({onClose})=>{
 const WatchlistItem = ({item})=>{
     const {removeFromCheckout, addToCheckout, removeFromWatchlist, checkOut} = useWatchlist();
     const {products} = useProducts();
-    const {isAuth, user} = useAuth();
-    const [token] = useToken();
+    const {user} = useAuth();
     const [fade, setFade] = useState(false);
 
     useEffect(() => {
-        if(item.status === 1 && (item.heldBy !== (isAuth ? user.id : token))){
+        if(item.status === 1 && (item.heldBy !== (user.uid))){
             removeFromCheckout(item.id);
             setFade(true);
         }else{
@@ -208,9 +206,8 @@ const CheckoutPage = ({onClose})=>{
     const [deliveryFee, setDeliveryFee] = useState(0)
     const {markProductsAsSold, getProductById} = useProducts();
     const [totalPayment, setTotalPayment] = useState(getCheckoutTally() + deliveryFee);
-    const {user, isAuth} = useAuth();
-    const [token] = useToken();
-    const [email, setEmail] = useState(isAuth ? user.email : "");
+    const {user} = useAuth();
+    const [email, setEmail] = useState(user.isAnonymous ? "" : user.email);
     const history = useHistory();
 
     const initializePayment = usePaystackPayment({
@@ -256,9 +253,8 @@ const CheckoutPage = ({onClose})=>{
         initializePayment(
         ({ transaction, reference, status }) => {
             // implementation for  whatever you want to do when the Paystack dialog closed.
-            console.log("status", status);
             markProductsAsSold(getProductsForCheckout())
-            clearCheckedOut(isAuth ? user.id : token);
+            clearCheckedOut(user.uid);
             onClose();
         }, () => {
             // implementation for  whatever you want to do when the Paystack dialog closed.
@@ -339,14 +335,14 @@ const CheckoutPage = ({onClose})=>{
                     </div>
                 </div>
             </div>
-            {isAuth ? <></> :<div className="email-setup">
+            {user.isAnonymous ? <div className="email-setup">
                 <div className='label'>
                     Email Address
                 </div>
                 <div className="email-input">
                     <input autoFocus required value={email} name="email" type="email" placeholder="Enter your email address" onChange={({target: {value}})=> setEmail(value)} />
                 </div>
-            </div>}
+            </div> : <></>}
         </div>
         <div className="footer">
             <button type="submit" className="submit-btn" style={{marginRight: 0}}>Accept Checkout</button>

@@ -1,6 +1,5 @@
 // import axios from 'axios';
 import React, { useState, useContext } from 'react';
-import api from '../api';
 import firebase from '../firebase';
 import { useError } from './errorProvider';
 import {useNotification} from './notificationProvider';
@@ -39,7 +38,7 @@ function ProductsProvider({ children }) {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]); 
     const [loading, setLoading] = useState(false);
-    const {error, createError} = useError();
+    const {createError} = useError();
     const {notifyHold, notifyUnheld} = useNotification();
 
     const productsRef = firebase.firestore().collection('products');
@@ -50,15 +49,14 @@ function ProductsProvider({ children }) {
         // make api call to fetch products from db
         catsRef.get().then(item=>{
             setCategories(item.docs.map(doc=> doc.data()) || []);
-        }).catch(err=>{
-            console.log(err);
+        }).catch(({message})=>{
+            createError(message);
         })
 
         productsRef.onSnapshot(snapshot=>{
             setProducts(snapshot.docs.map(doc=> doc.data()) || []);
             setLoading(false);
             snapshot.docChanges(item=>{
-                console.log("products modified", item.data());
                 setProducts(item.docs.map(doc=> doc.data()) || []);
             });
         });       
@@ -123,47 +121,26 @@ function ProductsProvider({ children }) {
         if(checkoutProducts.length > 0 && checkoutProducts !== null){
             const productIds = checkoutProducts.map(item=> item.id);
             productIds.forEach(id => {
-                productsRef.doc(id).update({status: 2}).catch(error=> console.log(error));
+                productsRef.doc(id).update({status: 2})
+                .catch(({message})=> createError(message));
             });
-            
-            const modifiedProducts = [];
-            products.forEach(product=> {
-                if(productIds.includes(product.id)){
-                    product.status = 2;
-                    modifiedProducts.push(product);
-                }else{
-                    modifiedProducts.push(product);
-                }
-            });
-
-            setProducts(modifiedProducts.map(product=> product));
         }
     }
 
     const like = (userId, product)=>{
-        let output = false;
         let update = {};
         if(product.likes.includes(userId)){
             update = {likes: [...product.likes.filter(id=> id !== userId)]}
-        }else{
-            update = {likes: [...product.likes, userId]}
+        }else{ 
+            update = {likes: [...product.likes, userId]} 
         }
         productsRef.doc(product.id).update(update)
-        .then(docref=>{
-            const newProducts = products;
-            const index = newProducts.indexOf(product);
-            product.likes = update.likes;
-            newProducts[index] = product;
-            setProducts(newProducts.map(item=> item));
-            output = true;
-        }).catch(error=>{
-            console.log(error);
-        })
-        return output;
+        .catch(({message})=>{
+            createError(message);
+        });
     }
  
     const addToWishList = (userId, product)=>{
-        let output = false;
         let update = {};
         if(product.wishlist.includes(userId)){
             update = {wishlist: [...product.wishlist.filter(id=> id !== userId)]}
@@ -171,38 +148,21 @@ function ProductsProvider({ children }) {
             update = {wishlist: [...product.wishlist, userId]}
         }
         productsRef.doc(product.id).update(update)
-        .then(docref=>{
-            const newProducts = products;
-            const index = newProducts.indexOf(product);
-            product.wishlist = update.wishlist;
-            newProducts[index] = product;
-            setProducts(newProducts.map(item=> item));
-            output = true;
-        }).catch(error=>{
-            console.log(error);
-        })
-        return output;
+        .catch(({message})=>{
+            createError(message);
+        });
     }
 
     const share = ()=>{
-
+        // implement share functionality
     }
 
     const comment = (by, message, product)=>{
-        const update = {comments: [{by, comment: message}, ...product.comments]};
-
-        productsRef.doc(product.id).update(update)
-        .then(docRef=>{
-            const newProducts = products;
-            const updatedProduct = product;
-            updatedProduct.comments = update.comments;
-            const index = products.indexOf(product);
-            newProducts[index] = updatedProduct;
-            setProducts(newProducts.map(item=> item));
-        })
-        .catch(error=>{
-            console.log(error)
-        })
+        productsRef.doc(product.id).update(
+            {comments: [{by, comment: message}, ...product.comments]
+        }).catch(({message})=>{
+            createError(message)
+        });
     }
     
     return (
